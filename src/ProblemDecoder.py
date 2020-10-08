@@ -15,6 +15,10 @@ class Decoder:
         Construct a new 'Decoder' object.
 
         :param decoding_function: The function to use to decode the given file (should be different depending on its format).
+        To add a decoding function, create a decoding file in the Decoders directory. Add the decoding function you would like to
+        use and then pass this function as an argument when creating a Decoder object. 
+
+        Note: All decoding function must take a file as an argument and return a dictionnary.
         :return: returns nothing
         """
 
@@ -30,7 +34,8 @@ class Decoder:
         Decodes the given file and stores its result in the corresponding member. 
         It deletes any previously stored result.
 
-        :param file: The file to decode (currently supported: Nothing)
+        :param file: The file to decode (currently supported: JSon)
         :return: Returns the resulting 'Input' object (or None if something went wrong)
         """
-        self.result = self.decoding_function(file)
+        output = self.decoding_function(file)
+        self.result.set_entire_dictionnary(output) 

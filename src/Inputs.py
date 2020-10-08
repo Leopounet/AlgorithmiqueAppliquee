@@ -35,7 +35,15 @@ class Inputs:
         """
         self.inputs[key] = value
 
-    def get_input(self, key):
+    def set_entire_dictionnary(self, dict):
+        """
+        Replaces the current value of the inputs dictionnary by the given dictionnary.
+
+        :param dict: The dictionnary that will replace the current one.
+        :return: returns nothing.
+        """
+
+    def get_input_from_key(self, key):
         """
         Finds an element in the inputs dictionnary using the given key.
         Should we throw an error if something goes horribly wrong? (the key is not valid) or return None? Might be confusing?
@@ -46,3 +54,11 @@ class Inputs:
         if key in self.inputs:
             return self.inputs[key]
         return None
+
+    def get_key_list(self):
+        """
+        Returns all the available keys in the dictionnary.
+
+        :return: All the available keys in the dictionnary.
+        """
+        return list(self.inputs.keys())
