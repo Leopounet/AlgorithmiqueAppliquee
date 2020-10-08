@@ -3,17 +3,25 @@ This module is used to store inputs of the problem in a standardized manner.
 Every possible variants of the problem could be simulated with this class.
 """
 
-class Inputs:
+class Problem:
 
     """
     Inputs encapsulates every possible set of inputs for the problem.
     """
-    def __init__(self):
+    def __init__(self, decoding_function):
         """
         Construct a new 'Inputs' object.
 
+        :param decoding_function: The function to use to decode the given file (should be different depending on its format).
+        To add a decoding function, create a decoding file in the Decoders directory. Add the decoding function you would like to
+        use and then pass this function as an argument when creating a Decoder object. 
+
+        Note: All decoding function must take a file as an argument and return a dictionnary.
         :return: returns nothing
         """
+
+        # This member is a function, it should take a file as an argument
+        self.decoding_function = decoding_function
 
         # Dictionnary used to store all types of inputs
         # The reason why a dict. is used here is that it can be easily modified between two different instances of the
@@ -23,6 +31,16 @@ class Inputs:
         # Or: Store None whenever a key is unused
         # Always: Add new keys when needed (keys names will probably be taken from the input file) 
         self.inputs = {}
+
+    def decode(self, file):
+        """
+        Decodes the given file and stores its result in the corresponding member. 
+        It deletes any previously stored result.
+
+        :param file: The file to decode (currently supported: JSon)
+        :return: Returns the resulting 'Input' object (or None if something went wrong)
+        """
+        self.inputs = self.decoding_function(file)
 
     def add_input(self, key, value=None):
         """
@@ -34,14 +52,6 @@ class Inputs:
         :return: returns nothing
         """
         self.inputs[key] = value
-
-    def set_entire_dictionnary(self, dict):
-        """
-        Replaces the current value of the inputs dictionnary by the given dictionnary.
-
-        :param dict: The dictionnary that will replace the current one.
-        :return: returns nothing.
-        """
 
     def get_input_from_key(self, key):
         """
