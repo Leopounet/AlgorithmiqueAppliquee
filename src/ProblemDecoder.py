@@ -2,7 +2,7 @@ import Inputs
 
 """
 This module is used to decode the given problems. 
-See exampls here: https://github.com/medrimonia/ssl_defender_viewer
+See examples here: https://github.com/medrimonia/ssl_defender_viewer
 """
 
 class Decoder:
