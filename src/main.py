@@ -4,10 +4,14 @@ File used to do some testing for now. Might be better to have a test.py file tho
 
 import Decoders.JSonDecoder as JSonDecoder
 from Problem import Problem
+from ProblemType import Problemtype
+import glob
 
-problem = Problem(JSonDecoder.decode)
-problem.decode("../examples/problems/basic_problem_1.json")
-keys = problem.get_key_list()
+all_problems_path = glob.glob("../examples/problems/*.json")
 
-for key in keys:
-    print(key, ": ", problem.get_input_from_key(key))
+for problem_path in all_problems_path:
+    problem = Problem(JSonDecoder.decode)
+    problem.decode(problem_path)
+    print("File: ", problem_path)
+    print("Problem Type: ", Problemtype.identifyProblem(problem).value)
+    print("")
