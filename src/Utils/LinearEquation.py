@@ -37,15 +37,15 @@ class LinearEquation:
             return None
 
         if angle == 0 or abs(angle) == math.pi:
-            if abs(p.y - origin.y) <= radius:
-                return Point(origin.x, p.y)
+            if abs(p.pos.y - origin.y) <= radius:
+                return Point(origin.x, p.pos.y)
             return None
         
         tan_angle = math.tan(angle)
         cot_angle = 1 / tan_angle
         
         le1 = LinearEquation(-cot_angle, origin.y + cot_angle * origin.x)
-        le2 = LinearEquation(tan_angle, p.y - tan_angle * p.x)
+        le2 = LinearEquation(tan_angle, p.pos.y - tan_angle * p.pos.x)
 
         p_intersect = le1.intersection(le2)
         if p_intersect.distance(origin) <= radius:

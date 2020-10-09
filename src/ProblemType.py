@@ -18,7 +18,7 @@ initial_pos_keys_set.add("defenders")
 min_dist_keys_set = basic_keys_set.copy()
 min_dist_keys_set.add("min_dist")
 
-class Problemtype(Enum):
+class ProblemType(Enum):
     BASIC = "Basic Problem"
     MIN_DIST = "Minimal Distance"
     GOAL_KEEPER = "Goal Keeper"

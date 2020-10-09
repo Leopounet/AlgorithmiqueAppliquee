@@ -31,7 +31,7 @@ class Defender(Player):
     def is_valid_pos(self, pos_step):
         return not (self.pos.x % pos_step and self.pos.y % pos_step)
 
-class Opponent:
+class Opponent(Player):
     
     def __init__(self, pos, radius=0):
         super().__init__(pos, radius)
@@ -70,29 +70,43 @@ class Goal:
         return Vector.v_from_a(shot.angle) * self.dir < 0
 
     def check_shot_on_target(self, shot):
-        i_min = min(self.s_pos.x, self.e_pos.x)
-        i_max = max(self.s_pos.x, self.e_pos.x)
+        x_min = min(self.s_pos.x, self.e_pos.x)
+        x_max = max(self.s_pos.x, self.e_pos.x)
+
+        y_min = min(self.s_pos.y, self.e_pos.y)
+        y_max = max(self.s_pos.y, self.e_pos.y)
 
         tan_theta = math.tan(shot.angle)
         o_x = shot.opponent.pos.x
         o_y = shot.opponent.pos.y
 
-        ratio = (self.e_pos.y - self.s_pos.y) / (self.e_pos.x - self.s_pos.x)
-
         if abs(shot.angle) == math.pi / 2:
-            if i_min < o_x and o_x < i_max:
+            if x_min < o_x and o_x < x_max:
                 return True
             return False
 
-        if math.tan(shot.angle) == ratio:
+        if abs(shot.angle) == math.pi or shot.angle == 0:
+            if y_min < o_y and o_y < y_max:
+                return True
             return False
 
         le1 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
-        le2 = LinearEquation(ratio, self.e_pos.y - self.e_pos.x * ratio)
+        le2 = None
+
+        if self.e_pos.x - self.s_pos.x == 0:
+            y = le1.apply(self.e_pos.x)
+            return y_min < y and y < y_max
+        else:
+            ratio = (self.e_pos.y - self.s_pos.y) / (self.e_pos.x - self.s_pos.x)
+            if math.tan(shot.angle) == ratio:
+                return False
+            le2 = LinearEquation(ratio, self.e_pos.y - self.e_pos.x * ratio)
 
         p_intersect = le1.intersection(le2)
+        if p_intersect == None:
+            return False
 
-        return i_min < p_intersect.x and p_intersect.x < i_max
+        return x_min < p_intersect.x and p_intersect.x < x_max
 
     def is_shot_valid(self, shot):
         return (self.check_position(shot.opponent) and
@@ -100,31 +114,42 @@ class Goal:
                 self.check_shot_on_target(shot))
 
     def shot_intercepted(self, defender, shot):
-        p = LinearEquation.intersection_circle(shot.opponent, shot.angle, defender.pos, defender.radius)
-
-        if p == None:
-            return False
 
         tan_theta = math.tan(shot.angle)
         o_x = shot.opponent.pos.x
         o_y = shot.opponent.pos.y
 
-        ratio = (self.e_pos.y - self.s_pos.y) / (self.e_pos.x - self.s_pos.x)
+        le1 = None
+        le2 = None
 
-        if math.tan(shot.angle) == ratio:
+        p = None
+        q = None
+
+        p = LinearEquation.intersection_circle(shot.opponent, shot.angle, defender.pos, defender.radius)
+
+        if p == None:
             return False
 
-        le1 = None
-        le2 = None 
-
         if abs(shot.angle) == math.pi / 2:
-            le1 = LinearEquation(o_x, 0)
+            q = Point(o_x, self.e_pos.y)
         else:
-            le1 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
+            if abs(shot.angle) == math.pi or shot.angle == 0:
+                q = Point(self.e_pos.x, o_y)
+            else:
+                le1 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
 
-        le2 = LinearEquation(ratio, self.e_pos.y - self.e_pos.x * ratio)
+                if self.e_pos.x - self.s_pos.x == 0:
+                    y = le1.apply(self.e_pos.x)
+                    q = Point(self.e_pos.x, y)                    
+                else:
+                    ratio = (self.e_pos.y - self.s_pos.y) / (self.e_pos.x - self.s_pos.x)
 
-        q = le1.intersection(le2)
+                    if math.tan(shot.angle) == ratio:
+                        return False
+
+                    le2 = LinearEquation(ratio, self.e_pos.y - self.e_pos.x * ratio)
+
+                    q = le1.intersection(le2)
 
         if min(q.x, o_x) <= p.x and p.x <= max(q.x, o_x):
             return True
