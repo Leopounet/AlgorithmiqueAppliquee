@@ -61,4 +61,10 @@ theta_step = problem.get_input_from_key("theta_step")
 pos_step = problem.get_input_from_key("pos_step")
 
 graph.compute_graph(goal, pos_step, theta_step, opponents, bottom_left, top_right, radius)
-print(graph)
+res = graph.solve(2)
+if res != None:
+    for d in res:
+        print(d.pos)
+else:
+    print("None")
+# print(graph)
