@@ -63,7 +63,7 @@ class Vector:
         return Vector(v.x, v.y)
 
     @classmethod 
-    def v_from_pa(self, a, theta):
+    def v_from_a(self, theta):
 
         # Unlikely to happen? Should we add an epsilon margin?
         if theta == math.pi / 2:

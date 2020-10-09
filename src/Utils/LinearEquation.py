@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
-import src.Utils.Point as Point
+from src.Utils.Point import Point
 
 class LinearEquation:
 
@@ -27,7 +27,7 @@ class LinearEquation:
             return None
 
         p_1 = (other.b - self.b) / (self.a - other.a)
-        return Point.Point(p_1, self.apply(p_1))
+        return Point(p_1, self.apply(p_1))
 
     @classmethod
     def le_from_vp(self, vector, point):

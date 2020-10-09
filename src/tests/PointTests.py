@@ -2,13 +2,13 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-import src.Utils.Point as Point
+from src.Utils.Point import Point
 import random
 
 def random_point(domain):
     x = random.randint(domain[0], domain[1])
     y = random.randint(domain[0], domain[1])
-    return Point.Point(x, y)
+    return Point(x, y)
 
 p1 = random_point((-10, 10))
 p2 = random_point((-10, 10))
