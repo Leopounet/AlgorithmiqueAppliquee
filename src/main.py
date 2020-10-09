@@ -27,7 +27,7 @@ import math
 #     print("Problem Type: ", Problemtype.identifyProblem(problem).value)
 #     print("")
 
-path = glob.glob("../examples/problems/basic_problem_1.json")[0]
+path = glob.glob("../examples/problems/basic_problem_2.json")[0]
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 

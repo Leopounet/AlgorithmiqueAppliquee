@@ -66,7 +66,7 @@ class Graph:
 
     def collision_rec(self, def_list, new_def):
         for defender in def_list:
-            if self.defenders[defender].collision(self.defenders[new_def], self.defenders[0].radius):
+            if self.defenders[defender].collision(self.defenders[new_def]):
                 return True
         return False
 
@@ -83,7 +83,8 @@ class Graph:
         else:
             while index < len(self.defenders):
                 if self.collision_rec(defenders_list, index):
-                    return res
+                    index += 1
+                    continue
                 defenders_list.append(index)
                 res = self.solve_(size-1, defenders_list, index+1)
                 if res != None:
