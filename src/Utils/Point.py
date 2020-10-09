@@ -37,5 +37,8 @@ class Point:
     def __str__(self):
         return "(" + str(self.x) + ", " + str(self.y) + ")"
 
+    def distance(self, other):
+        return math.sqrt(pow(other.x - self.x, 2) + pow(other.y - self.y, 2))
+
     def mid_point(self, other):
         return Point((self.x + other.x) / 2, (self.y + other.y) / 2)

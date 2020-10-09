@@ -30,6 +30,29 @@ class LinearEquation:
         return Point(p_1, self.apply(p_1))
 
     @classmethod
+    def intersection_circle(self, p, angle, origin, radius):
+        if abs(angle) == math.pi / 2:
+            if abs(p.x - origin.x) <= radius:
+                return Point(p.x, origin.y)
+            return None
+
+        if angle == 0 or abs(angle) == math.pi:
+            if abs(p.y - origin.y) <= radius:
+                return Point(origin.x, p.y)
+            return None
+        
+        tan_angle = math.tan(angle)
+        cot_angle = 1 / tan_angle
+        
+        le1 = LinearEquation(-cot_angle, origin.y + cot_angle * origin.x)
+        le2 = LinearEquation(tan_angle, p.y - tan_angle * p.x)
+
+        p_intersect = le1.intersection(le2)
+        if p_intersect.distance(origin) <= radius:
+            return p_intersect
+        return None
+
+    @classmethod
     def le_from_vp(self, vector, point):
         a = vector.y / vector.x
         b = -a * point.x + point.y
