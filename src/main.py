@@ -27,7 +27,7 @@ import math
 #     print("Problem Type: ", Problemtype.identifyProblem(problem).value)
 #     print("")
 
-path = glob.glob("../examples/problems/basic_problem_2.json")[0]
+path = glob.glob("../examples/problems/basic_problem_3.json")[0]
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
@@ -61,7 +61,7 @@ theta_step = problem.get_input_from_key("theta_step")
 pos_step = problem.get_input_from_key("pos_step")
 
 graph.compute_graph(goal, pos_step, theta_step, opponents, bottom_left, top_right, radius)
-res = graph.solve(2)
+res = graph.solve(1)
 if res != None:
     for d in res:
         print(d.pos)
