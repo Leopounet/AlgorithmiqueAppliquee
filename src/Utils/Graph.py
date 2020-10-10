@@ -21,6 +21,8 @@ class Graph:
     added.
     """
 
+    recursive_calls = 0
+
     def __init__(self):
         """
         Construct a new 'Graph' object.
@@ -228,6 +230,8 @@ class Graph:
 
         :return: None if there isn't any solution, the list of indexes otherwise.
         """
+
+        self.recursive_calls += 1
 
         # If there isn't any more defender to add and the size of the team is still
         # not valid, return None (obviously we don't go further as

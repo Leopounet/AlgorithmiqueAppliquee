@@ -67,5 +67,5 @@ if res != None:
         print(d.pos)
 else:
     print("None")
-# print(len(graph.edges) * len(graph.defenders))
+print("Nb recursive calls:", graph.recursive_calls)
 # print(graph)
