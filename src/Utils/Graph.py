@@ -178,7 +178,7 @@ class Graph:
                 return True
         return False
 
-    def collision_rec(self, def_list, new_def):
+    def valid_defender(self, def_list, new_def):
         """
         Check if there exists a collision between a new defender and a list of pre existing defender.
         It only checks if the new defender creates a collision, elements of the list could have collision
@@ -205,7 +205,7 @@ class Graph:
             lst.append(self.defenders[defender])
         return lst.copy()
 
-    def solve(self, size, defenders_list=[], index=0):
+    def solve(self, size, defenders_list=[], index=0, dominated_set=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -239,7 +239,7 @@ class Graph:
         # return the list, otherwise return None (not going further because
         # we need to remove the last added defender, to add the next one)
         if size == 0:
-            if self.is_dominant_set(defenders_list):
+            if dominated_set == self.dominant_value:
                 return self.index_list_to_defenders(defenders_list)
             return None
 
@@ -258,17 +258,18 @@ class Graph:
             # 5 -> remove the current defender and go to the next one
             while index < len(self.defenders):
 
-                # Check if a defender already does exactly what this one does
-                # TODO
+                if (dominated_set | self.edges[index]) == dominated_set:
+                    index += 1
+                    continue
 
                 # Collision detection
-                if self.collision_rec(defenders_list, index):
+                if self.valid_defender(defenders_list, index):
                     index += 1
                     continue
 
                 # New defender added and solution checking
                 defenders_list.append(index)
-                res = self.solve(size-1, defenders_list, index+1)
+                res = self.solve(size-1, defenders_list, index+1, dominated_set | self.edges[index])
 
                 # End of recursion if there exists a solution
                 if res != None:

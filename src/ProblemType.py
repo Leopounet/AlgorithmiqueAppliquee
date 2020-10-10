@@ -28,7 +28,7 @@ class ProblemType(Enum):
     UNDEFINED = "UNDEFINED"
 
     @classmethod
-    def identifyProblem(self, problem):
+    def identify_problem(self, problem):
         keys = problem.get_key_list()
 
         # There should not be any duplicated fields so converting to a set should be fine

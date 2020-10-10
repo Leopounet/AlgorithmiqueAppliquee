@@ -24,7 +24,7 @@ import math
 #     problem = Problem(JSonDecoder.decode)
 #     problem.decode(problem_path)
 #     print("File: ", problem_path)
-#     print("Problem Type: ", Problemtype.identifyProblem(problem).value)
+#     print("Problem Type: ", Problemtype.identify_problem(problem).value)
 #     print("")
 
 path = glob.glob("../examples/problems/basic_problem_1.json")[0]
@@ -67,4 +67,5 @@ if res != None:
         print(d.pos)
 else:
     print("None")
+# print(len(graph.edges) * len(graph.defenders))
 # print(graph)
