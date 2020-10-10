@@ -62,6 +62,10 @@ class Graph:
         self.edges = []
         self.dominant_value = 0
 
+        self.max_deg = 0
+        self.deg = []
+        self.max_deg_after = []
+
     def compute_all_shots(self, opponents, step, goal):
         """
         Computs all useful shots and adds them to the list of shots.
@@ -130,6 +134,7 @@ class Graph:
 
                 # Current defender (if it were to be placed here)
                 defender = Defender(Point(x, y), radius)
+                deg = 0
 
                 # If there is a collision, go to the next position
                 if self.exists_collision_opponents(defender):
@@ -152,6 +157,7 @@ class Graph:
                         # Shifting to the left (*2) and adding one to signify that
                         # an edge exists
                         edges = (edges << 1) + 1
+                        deg += 1
                     else:
                         edges = edges << 1
                 
@@ -160,6 +166,8 @@ class Graph:
                 if edges != (self.dominant_value + 1) / 2:
                     self.defenders.append(defender)
                     self.edges.append(edges)
+                    self.max_deg = max(deg, self.max_deg)
+                    self.deg.append(deg)
                 
                 y += step
             x += step
@@ -207,7 +215,7 @@ class Graph:
             lst.append(self.defenders[defender])
         return lst.copy()
 
-    def solve(self, size, defenders_list=[], index=0, dominated_set=0):
+    def solve_(self, size, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -271,9 +279,17 @@ class Graph:
                     index += 1
                     continue
 
+                tmp_max_possible_deg = max_possible_deg + self.deg[index]
+                if tmp_max_possible_deg + (size-1) * self.max_deg_after[index] < len(self.shots):
+                    index += 1
+                    continue
+
+                tmp_dominant_set = dominated_set | self.edges[index]
+
                 # New defender added and solution checking
                 defenders_list.append(index)
-                res = self.solve(size-1, defenders_list, index+1, dominated_set | self.edges[index])
+                   
+                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
 
                 # End of recursion if there exists a solution
                 if res != None:
@@ -285,6 +301,14 @@ class Graph:
 
         # If the previous defender didn't yield any valid solution, return None
         return None
+
+    def solve(self, size):
+        # check before hand
+        if self.max_deg * size < len(self.shots):
+            print("Impossible! ", self.max_deg * size, " < ", len(self.shots))
+            return None
+
+        return self.solve_(size)
 
     def compute_graph(self, goal, pos_step, theta_step, opponents, bottom_left, top_right, radius):
         """
@@ -299,6 +323,13 @@ class Graph:
         self.compute_all_shots(opponents, theta_step, goal)
         self.dominant_value = pow(2, len(self.shots) + 1) - 1
         self.compute_all_positions(bottom_left, top_right, pos_step, radius, goal)
+
+        # to do in a separate place pls
+        max_found = self.deg[len(self.deg) - 1]
+        for i in range(0, len(self.deg)):
+            max_found = max(self.deg[len(self.deg) - i - 1], max_found)
+            self.max_deg_after.append(max_found)
+        self.max_deg_after = self.max_deg_after[::-1]
 
     def __str__(self):
         """

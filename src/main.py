@@ -27,7 +27,7 @@ import math
 #     print("Problem Type: ", Problemtype.identify_problem(problem).value)
 #     print("")
 
-path = glob.glob("../examples/problems/basic_problem_1.json")[0]
+path = glob.glob("../examples/problems/basic_problem_4.json")[0]
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
@@ -61,11 +61,16 @@ theta_step = problem.get_input_from_key("theta_step")
 pos_step = problem.get_input_from_key("pos_step")
 
 graph.compute_graph(goal, pos_step, theta_step, opponents, bottom_left, top_right, radius)
-res = graph.solve(3)
-if res != None:
-    for d in res:
-        print(d.pos)
-else:
-    print("None")
+print("Graph has be constructed!")
+res = None
+step = 1
+while res == None and step <= 10:
+    res = graph.solve(step)
+    if res != None:
+        for d in res:
+            print(d.pos)
+    else:
+        print("None")
+    step += 1
 print("Nb recursive calls:", graph.recursive_calls)
 # print(graph)
