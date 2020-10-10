@@ -2,11 +2,11 @@ import math
 
 class Vector:
 
-    n_digits_round = 15
+    n_digits_round = 10
 
     def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+        self.x = round(x, self.n_digits_round)
+        self.y = round(y, self.n_digits_round)
 
     def __add__(self, other):
         return Vector(self.x + other.x, self.y + other.y)
@@ -17,12 +17,12 @@ class Vector:
     def __mul__(self, other):
         if isinstance(other, (int, float)):
             return Vector(self.x * other, self.y * other)
-        return self.x * other.x + self.y * other.y
+        return round(self.x * other.x + self.y * other.y, self.n_digits_round)
 
     def __rmul__(self, other):
         if isinstance(other, (int, float)):
             return Vector(self.x * other, self.y * other)
-        return self.x * other.x + self.y * other.y
+        return round(self.x * other.x + self.y * other.y, self.n_digits_round)
 
     def __truediv__(self, const):
         if const == 0:
@@ -49,8 +49,8 @@ class Vector:
         y = self.y / norm
 
         if in_place:
-            self.x = x
-            self.y = y
+            self.x = round(x, self.n_digits_round)
+            self.y = round(y, self.n_digits_round)
             return self
         return Vector(x, y)           
 

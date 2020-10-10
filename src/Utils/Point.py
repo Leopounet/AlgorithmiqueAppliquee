@@ -2,9 +2,11 @@ import math
 
 class Point:
 
+    n_digits_round = 10
+
     def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+        self.x = round(x, self.n_digits_round)
+        self.y = round(y, self.n_digits_round)
 
     def __add__(self, other):
         # Not super clean but technically 'other' can be a vector

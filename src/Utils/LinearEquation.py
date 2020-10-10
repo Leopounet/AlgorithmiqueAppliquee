@@ -7,15 +7,17 @@ from src.Utils.Point import Point
 
 class LinearEquation:
 
+    n_digits_round = 15
+
     def __init__(self, a=0, b=0):
-        self.a = a
-        self.b = b
+        self.a = round(a, self.n_digits_round)
+        self.b = round(b, self.n_digits_round)
 
     def __str__(self):
         return "y = " + str(self.a) + " * x + " + str(self.b) 
 
     def apply(self, x):
-        return self.a * x + self.b
+        return round(self.a * x + self.b, self.n_digits_round)
 
     def is_point_on(self, point):
         if self.apply(point.x) == point.y:
