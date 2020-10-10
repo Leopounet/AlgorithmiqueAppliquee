@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 import math
 from src.Utils.Point import Point
 from src.Utils.UsefulTypes import Opponent, Shot, Defender
-
+import time
 """
 This module is used to simulate graphs.
 Subject to a lot, lot of changes, yep.
@@ -232,7 +232,7 @@ class Graph:
             lst.append(self.defenders[defender])
         return lst.copy()
 
-    def solve_(self, size, thread, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
+    def solve_(self, size, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -267,7 +267,6 @@ class Graph:
         # we need to remove the last added defender, to add the next one)
         if size == 0:
             if dominated_set == self.dominant_value:
-                self.thread_end = True
                 return self.index_list_to_defenders(defenders_list)
             return None
 
@@ -285,11 +284,6 @@ class Graph:
             # 4 -> If there exists a solution, stop the recursion and return it
             # 5 -> remove the current defender and go to the next one
             while index < len(self.defenders):
-
-                if self.thread_end:
-                    return None
-
-                # self.recursive_calls += 1
 
                 if (dominated_set | self.edges[index]) == dominated_set:
                     index += 1
@@ -310,26 +304,29 @@ class Graph:
                 # New defender added and solution checking
                 defenders_list.append(index)
                    
-                res = self.solve_(size-1, thread, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+
+                # Remove current defender and go to the next one
+                del defenders_list[-1]
 
                 # End of recursion if there exists a solution
                 if res != None:
                     return res
 
-                # Remove current defender and go to the next one
-                del defenders_list[-1]
                 index += 1
 
         # If the previous defender didn't yield any valid solution, return None
         return None
 
-    def solve(self, size, thread):
+    def solve(self, size):
         # check before hand
         if self.max_deg * size < len(self.shots):
             print("Impossible! ", self.max_deg * size, " < ", len(self.shots))
             return None
 
-        return self.solve_(size, thread)
+        defenders_list = []
+
+        return self.solve_(size, defenders_list, 0, 0, 0)
      
     def swap(self, arr, i, j):
         tmp = arr[i]

@@ -17,7 +17,6 @@ from src.Utils.Vector import Vector
 from src.Utils.UsefulTypes import Goal, Defender, Opponent, Shot
 
 import math
-import threading
 
 # all_problems_path = glob.glob("../examples/problems/*.json")
 
@@ -67,55 +66,7 @@ graph_sorted = graph.copy()
 graph.construct_deg(False)
 graph_sorted.construct_deg(True)
 
-print("Graph has be constructed!")
-res = None
-step = 1
+print("Graph has been constructed!")
 
-class myThread (threading.Thread):
-
-    def __init__(self, threadID, name, graph, step, sorted_arr):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.step = step
-        self.graph = graph
-        self.sorted = sorted_arr
-
-        self.res = None
-
-    def run(self):
-        self.res = graph.solve(step, self)
-
-while res == None and step <= 10:
-    thread1 = myThread(1, "Thread-1", graph, step, True)
-    thread2 = myThread(2, "Thread-2", graph_sorted, step, False)
-
-    thread1.graph.thread_end = False
-    thread2.graph.thread_end = False
-    res = None
-
-    thread1.start()
-    thread2.start()
-
-    thread1.graph.thread_end = True
-    thread2.graph.thread_end = True
-
-    thread1.join()
-    thread2.join()
-
-    if thread1.res == None and thread2.res == None:
-        res = None
-    
-    elif thread1.res != None:
-        res = thread1.res
-    
-    elif thread2.res != None:
-        res = thread2.res
-
-    if res != None:
-        for d in res:
-            print(d.pos)
-    else:
-        print("None")
-    step += 1
-# # print(graph)
+res = graph_sorted.solve(4)
+print(res)

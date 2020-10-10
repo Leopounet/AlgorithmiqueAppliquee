@@ -147,3 +147,11 @@ class LinearEquation:
         if p_intersect.distance(origin) <= radius:
             return p_intersect
         return None
+
+    @classmethod
+    def create_le_from_pa(self, point, angle):
+        if abs(angle) == math.pi / 2:
+            return None
+
+        tan_angle = math.tan(angle)
+        return LinearEquation(tan_angle, point.y - tan_angle * point.x)
