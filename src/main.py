@@ -33,7 +33,7 @@ path = None
 if len(sys.argv) >= 2:
     path = sys.argv[1]
 else:
-    path = glob.glob("../examples/problems/basic_problem_1.json")[0]
+    path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
 
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)

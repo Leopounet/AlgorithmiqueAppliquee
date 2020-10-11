@@ -399,10 +399,17 @@ class Graph:
         Please improve the argument list, like ew. Create a class maybe?
         """
         self.opponents = opponents
+        s = time.time()
         self.compute_all_shots(opponents, theta_step, goal)
+        e = time.time()
+        print("Shots:", e - s)
+        
+        s = time.time()
         self.interesting_points(goal, radius)
         self.dominant_value = pow(2, len(self.shots) + 1) - 1
         self.compute_all_positions(bottom_left, top_right, pos_step, radius, goal)
+        e = time.time()
+        print("Edges:", e - s)
 
     def __str__(self):
         """
