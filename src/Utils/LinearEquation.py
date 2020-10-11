@@ -155,3 +155,12 @@ class LinearEquation:
 
         tan_angle = math.tan(angle)
         return LinearEquation(tan_angle, point.y - tan_angle * point.x)
+
+    @classmethod
+    def create_le_from_pp(self, p1, p2):
+        if p1.x == p2.x:
+            return None
+        
+        a = (p2.y - p1.y) / (p2.x - p1.x)
+        b = p1.y - a * p1.x
+        return LinearEquation(a, b)

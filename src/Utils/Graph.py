@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import math
 from src.Utils.Point import Point
+from src.Utils.ConvexShape import ConvexShape
 from src.Utils.UsefulTypes import Opponent, Shot, Defender
 import time
 """
@@ -67,6 +68,7 @@ class Graph:
         self.max_deg_after = []
 
         self.thread_end = False
+        self.triangles = []
 
     def copy(self):
         graph = Graph()
@@ -82,6 +84,27 @@ class Graph:
         graph.max_deg_after = self.max_deg_after.copy()
         graph.thread_end = False
         return graph
+
+    def compute_default_triangles(self, goal):
+        triangles = []
+        for opponent in self.opponents:
+            triangles.append(ConvexShape.compute_triangle(opponent, goal))
+        return triangles.copy()
+
+    def compute_new_triangles(self, triangles, radius):
+        new_triangles = []
+        for triangle in triangles:
+            new_triangles.append(ConvexShape.compute_bigger_triangle(triangle, radius))
+        return new_triangles
+
+    def point_in_triangles(self, point):
+        for triangle in self.triangles:
+            if triangle.point_in(point):
+                return True
+        return False
+
+    def interesting_points(self, goal, radius):
+        self.triangles = self.compute_new_triangles(self.compute_default_triangles(goal), radius)
 
     def compute_all_shots(self, opponents, step, goal):
         """
@@ -148,6 +171,12 @@ class Graph:
             # goes bottom to top
             y = bottom_left.y
             while y <= top_right.y:
+
+                p = Point(x, y)
+
+                if not self.point_in_triangles(p):
+                    y += step
+                    continue
 
                 # Current defender (if it were to be placed here)
                 defender = Defender(Point(x, y), radius)
@@ -321,7 +350,6 @@ class Graph:
     def solve(self, size):
         # check before hand
         if self.max_deg * size < len(self.shots):
-            print("Impossible! ", self.max_deg * size, " < ", len(self.shots))
             return None
 
         defenders_list = []
@@ -370,6 +398,7 @@ class Graph:
         """
         self.opponents = opponents
         self.compute_all_shots(opponents, theta_step, goal)
+        self.interesting_points(goal, radius)
         self.dominant_value = pow(2, len(self.shots) + 1) - 1
         self.compute_all_positions(bottom_left, top_right, pos_step, radius, goal)
 

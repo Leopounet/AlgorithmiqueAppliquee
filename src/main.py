@@ -17,6 +17,7 @@ from src.Utils.Vector import Vector
 from src.Utils.UsefulTypes import Goal, Defender, Opponent, Shot
 
 import math
+import time
 
 # all_problems_path = glob.glob("../examples/problems/*.json")
 
@@ -27,7 +28,7 @@ import math
 #     print("Problem Type: ", Problemtype.identify_problem(problem).value)
 #     print("")
 
-path = glob.glob("../examples/problems/basic_problem_4.json")[0]
+path = glob.glob("../examples/problems/basic_problem_2.json")[0]
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
@@ -60,6 +61,8 @@ radius = problem.get_input_from_key("robot_radius")
 theta_step = problem.get_input_from_key("theta_step")
 pos_step = problem.get_input_from_key("pos_step")
 
+s = time.time()
+
 graph.compute_graph(goal, pos_step, theta_step, opponents, bottom_left, top_right, radius)
 graph_sorted = graph.copy()
 
@@ -68,5 +71,23 @@ graph_sorted.construct_deg(True)
 
 print("Graph has been constructed!")
 
-res = graph_sorted.solve(4)
-print(res)
+e = time.time() - s
+print("Elapsed time (graph construction):", e, "seconds")
+
+s = time.time()
+
+for i in range(10):
+    res = None
+    if i <= len(opponents) - 2:
+        res = graph_sorted.solve(i)
+    else:
+        res = graph.solve(i)
+    if res != None:
+        for d in res:
+            print(d.pos)
+        break
+    if i == 9:
+        print("No solution!")
+
+e = time.time() - s
+print("Elapsed time (solving):", e, "seconds")
