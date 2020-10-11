@@ -69,13 +69,17 @@ class Graph:
 
         self.thread_end = False
         self.triangles = []
+        self.nb_shots = 0
 
     def copy(self):
         graph = Graph()
 
         graph.defenders = self.defenders.copy()
         graph.opponents = self.opponents.copy()
-        graph.shots = self.shots.copy()
+        tmp = []
+        for s in self.shots:
+            tmp.append(s.copy())
+        graph.shots = tmp.copy()
         graph.edges = self.edges.copy()
         graph.dominant_value = self.dominant_value
 
@@ -83,6 +87,9 @@ class Graph:
         graph.deg = self.deg.copy()
         graph.max_deg_after = self.max_deg_after.copy()
         graph.thread_end = False
+
+        graph.triangles = self.triangles.copy()
+        graph.nb_shots = self.nb_shots
         return graph
 
     def compute_default_triangles(self, goal):
@@ -98,10 +105,13 @@ class Graph:
         return new_triangles
 
     def point_in_triangles(self, point):
+        tmp = []
+        index = 0
         for triangle in self.triangles:
             if triangle.point_in(point):
-                return True
-        return False
+                tmp.append(index)
+            index += 1
+        return tmp.copy()
 
     def interesting_points(self, goal, radius):
         self.triangles = self.compute_new_triangles(self.compute_default_triangles(goal), radius)
@@ -125,14 +135,19 @@ class Graph:
             # Low bound for an angle
             angle = -math.pi
 
+            tmp = []
+
             # Parse all possible angle in [-pi ; pi[
             while angle < math.pi:
 
                 # If this shot is valid (i.e: goes in the goal), it is added to the list of shots
                 shot = Shot(opponent, angle)
                 if goal.is_shot_valid(shot):
-                    self.shots.append(shot)
+                    self.nb_shots += 1
+                    tmp.append(shot)
                 angle += step
+            
+            self.shots.append(tmp.copy())
 
     def exists_collision_opponents(self, defender):
         """
@@ -174,7 +189,8 @@ class Graph:
 
                 p = Point(x, y)
 
-                if not self.point_in_triangles(p):
+                in_triangle = self.point_in_triangles(p)
+                if in_triangle == []:
                     y += step
                     continue
 
@@ -197,15 +213,19 @@ class Graph:
 
                 # Checking every valid shot, if at least one is intercepted, the defender gets added to
                 # the list
-                for shot in self.shots:
-                    if goal.shot_intercepted(defender, shot):
-                            
-                        # Shifting to the left (*2) and adding one to signify that
-                        # an edge exists
-                        edges = (edges << 1) + 1
-                        deg += 1
+                for i in range(len(self.triangles)):
+                    if i in in_triangle:
+                        for shot in self.shots[i]:
+                            if goal.shot_intercepted(defender, shot):
+                                    
+                                # Shifting to the left (*2) and adding one to signify that
+                                # an edge exists
+                                edges = (edges << 1) + 1
+                                deg += 1
+                            else:
+                                edges = edges << 1
                     else:
-                        edges = edges << 1
+                        edges = edges << len(self.shots[i])
                 
                 # If the result is not 1
                 # The defender is added (because it isn't useless)
@@ -261,7 +281,21 @@ class Graph:
             lst.append(self.defenders[defender])
         return lst.copy()
 
-    def solve_(self, size, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
+    def fill_triangles(self, filled_triangles, point):
+        index = 0
+        for t in self.triangles:
+            if t.point_in(point):
+                filled_triangles[index] = 1
+            index += 1
+
+    def count_not_filled(self, filled_triangles, size):
+        res = 0
+        for f in filled_triangles:
+            if f == 0:
+                res += 1
+        return size - res
+
+    def solve_(self, size, filled_triangles, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -286,6 +320,9 @@ class Graph:
         """
 
         self.recursive_calls += 1
+
+        if self.count_not_filled(filled_triangles, size) < 0:
+            return None
 
         # If there isn't any more defender to add and the size of the team is still
         # not valid, return None (obviously we don't go further as
@@ -326,16 +363,19 @@ class Graph:
                     continue
 
                 tmp_max_possible_deg = max_possible_deg + self.deg[index]
-                if tmp_max_possible_deg + (size-1) * self.max_deg_after[index] < len(self.shots):
+                if tmp_max_possible_deg + (size-1) * self.max_deg_after[index] < self.nb_shots:
                     index += 1
                     continue
 
                 tmp_dominant_set = dominated_set | self.edges[index]
+                tmp_filled_triangles = filled_triangles.copy()
+
+                self.fill_triangles(tmp_filled_triangles, self.defenders[index].pos)
 
                 # New defender added and solution checking
                 defenders_list.append(index)
                    
-                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+                res = self.solve_(size-1, tmp_filled_triangles, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
 
                 # Remove current defender and go to the next one
                 del defenders_list[-1]
@@ -351,12 +391,15 @@ class Graph:
 
     def solve(self, size):
         # check before hand
-        if self.max_deg * size < len(self.shots):
+        if self.max_deg * size < self.nb_shots:
             return None
 
         defenders_list = []
+        filled_triangles = []
+        for _ in self.triangles:
+            filled_triangles.append(0)
 
-        return self.solve_(size, defenders_list, 0, 0, 0)
+        return self.solve_(size, filled_triangles, defenders_list, 0, 0, 0)
      
     def swap(self, arr, i, j):
         tmp = arr[i]
@@ -406,7 +449,7 @@ class Graph:
         
         s = time.time()
         self.interesting_points(goal, radius)
-        self.dominant_value = pow(2, len(self.shots) + 1) - 1
+        self.dominant_value = pow(2, self.nb_shots + 1) - 1
         self.compute_all_positions(bottom_left, top_right, pos_step, radius, goal)
         e = time.time()
         print("Edges:", e - s)
