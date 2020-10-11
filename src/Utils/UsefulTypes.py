@@ -321,10 +321,10 @@ class Goal:
         :param shot: The shot to check.
         :return: True if the shot is valid, False otherwise.
         """
-        return (self.check_position(shot.opponent) and
-                self.check_shot_direction(shot) and
-                self.check_shot_on_target(shot))
-
+        a = self.check_position(shot.opponent)
+        b = self.check_shot_direction(shot)
+        c = self.check_shot_on_target(shot)
+        return a and b and c
     def shot_intercepted(self, defender, shot):
         """
         Checks if the given shot is intercepted by the given player with regard to this goal.

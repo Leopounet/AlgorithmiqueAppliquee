@@ -180,4 +180,6 @@ class Vector:
         if theta == -math.pi / 2:
             return Vector(0, -1)
 
+        if abs(theta) > math.pi / 2:
+            return Vector(-1, -round(math.tan(theta), self.n_digits_round))
         return Vector(1, round(math.tan(theta), self.n_digits_round))
