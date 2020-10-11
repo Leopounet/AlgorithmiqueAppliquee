@@ -18,6 +18,7 @@ from src.Utils.UsefulTypes import Goal, Defender, Opponent, Shot
 
 import math
 import time
+import json
 
 # all_problems_path = glob.glob("../examples/problems/*.json")
 
@@ -28,7 +29,12 @@ import time
 #     print("Problem Type: ", Problemtype.identify_problem(problem).value)
 #     print("")
 
-path = glob.glob("../examples/problems/basic_problem_1.json")[0]
+path = None
+if len(sys.argv) >= 2:
+    path = sys.argv[1]
+else:
+    path = glob.glob("../examples/problems/basic_problem_1.json")[0]
+
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
@@ -76,6 +82,8 @@ print("Elapsed time (graph construction):", e, "seconds")
 
 s = time.time()
 
+res = None
+
 for i in range(10):
     res = None
     if i <= len(opponents) - 2:
@@ -90,4 +98,14 @@ for i in range(10):
         print("No solution!")
 
 e = time.time() - s
+print("Nb recursive calls:", graph.recursive_calls + graph_sorted.recursive_calls)
 print("Elapsed time (solving):", e, "seconds")
+
+data = {}
+data["defenders"] = []
+
+for r in res:
+    data["defenders"].append([r.pos.x, r.pos.y])
+
+with open('dumps/data.json', 'w') as f:
+    json.dump(data, f)
