@@ -1,3 +1,10 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
+import math
+from src.ProblemType import ProblemType
+
 """
 This module is used to store inputs of the problem in a standardized manner. 
 Every possible variants of the problem could be simulated with this class.
@@ -32,6 +39,36 @@ class Problem:
         # Always: Add new keys when needed (keys names will probably be taken from the input file) 
         self.inputs = {}
 
+        # The type of problem
+        self.type = ProblemType.UNDEFINED
+
+    def __str__(self):
+        """
+        Allows the use of print(p) where p is a 'Problem' object.
+
+        :return: The corresponding string.
+        """
+        res = ""
+        for i in self.inputs:
+            if isinstance(self.inputs[i], list):
+                res += i + ": "
+                spaces = ""
+                first = True
+                for _ in range(len(i) + 2):
+                    spaces += " "
+
+                for e in self.inputs[i]:
+                    if not first:
+                        res += spaces
+                    first = False
+                    res += str(e) + " "
+                    res += "\n"
+            else:
+                res += i + ": " + str(self.inputs[i])
+            res += "\n"
+        res = res[:-1]
+        return res
+
     def decode(self, file):
         """
         Decodes the given file and stores its result in the corresponding member. 
@@ -40,7 +77,10 @@ class Problem:
         :param file: The file to decode (currently supported: JSon)
         :return: Returns the resulting 'Input' object (or None if something went wrong)
         """
-        self.inputs = self.decoding_function(file)
+        res = self.decoding_function(file)
+        if res != None:
+            self.inputs = res[0]
+            self.type = res[1]
 
     def add_input(self, key, value=None):
         """

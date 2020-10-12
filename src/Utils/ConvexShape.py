@@ -27,6 +27,17 @@ class ConvexShape:
         """
         self.points = points
 
+    def __str__(self):
+        """
+        Allows the use of print(cs) where cs is a 'ConvexShape' object.
+
+        :return: The correspoding string.
+        """
+        res = ""
+        for point in self.points:
+            res += str(point) + " "
+        return res
+
     # All methods created to create this method come from this answer on stackoverflow
     # # https://stackoverflow.com/questions/1119627/how-to-test-if-a-point-is-inside-of-a-convex-polygon-in-2d-integer-coordinates
     def point_in(self, point):

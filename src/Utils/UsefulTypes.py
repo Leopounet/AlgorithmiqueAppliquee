@@ -37,6 +37,15 @@ class Player:
         self.pos = pos
         self.radius = radius
 
+    def __str__(self):
+        """
+        Allows the use of print(p) where p is a 'Player' object.
+
+        :return: The corresponding string.
+        """
+        res = "Pos: " + str(self.pos) + " Radius: " + str(self.radius)
+        return res
+
     def collision(self, player, distance=None):
         """
         Checks if this player and the given one collide. It can also be used
@@ -127,6 +136,15 @@ class Shot:
         self.opponent = opponent
         self.angle = angle
 
+    def __str__(self):
+        """
+        Allows the use of print(s) where s is a 'Shot' object.
+
+        :return: The corresponding string.
+        """
+        res = "Opponent: " + str(self.opponent) + " Angle: " + str(self.angle)
+        return res
+
     def is_valid_angle(self, theta_step):
         """
         Check if the angle of this shot is valid regarding the given
@@ -156,6 +174,15 @@ class Goal:
         self.s_pos = start_pos
         self.e_pos = end_pos
         self.dir = direction
+
+    def __str__(self):
+        """
+        Allows the use of print(g) where g is a 'Goal' object.
+
+        :return: The corresponding string.
+        """
+        res = "Pos 1: " + str(self.s_pos) + " Pos 2: " + str(self.e_pos) + " Dir: " + str(self.dir)
+        return res
 
     def is_in_interval(self, low, high, value):
         """

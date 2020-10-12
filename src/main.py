@@ -11,105 +11,21 @@ from src.Problem import Problem
 from src.ProblemType import ProblemType
 import glob
 
-from src.Utils.TestGraph import TestGraph
-from src.Utils.Point import Point
-from src.Utils.Vector import Vector
-from src.Utils.UsefulTypes import Goal, Defender, Opponent, Shot
-
 import math
 import time
 import json
 
-# all_problems_path = glob.glob("../examples/problems/*.json")
-
-# for problem_path in all_problems_path:
-#     problem = Problem(JSonDecoder.decode)
-#     problem.decode(problem_path)
-#     print("File: ", problem_path)
-#     print("Problem Type: ", Problemtype.identify_problem(problem).value)
-#     print("")
-
-path = None
+# Either the path to the problem is specified or the default one is used
+path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
 if len(sys.argv) >= 2:
     path = sys.argv[1]
-else:
-    path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
 
+# Create the problem
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
-graph = TestGraph()
+print(problem)
 
-field_limits = problem.get_input_from_key("field_limits")
-bottom_left = Point(field_limits[0][0], field_limits[1][0])
-top_right = Point(field_limits[0][1], field_limits[1][1])
-
-goals = problem.get_input_from_key("goals")[0]
-posts = goals["posts"]
-direction = goals["direction"]
-
-post1 = Point(posts[0][0], posts[0][1])
-post2 = Point(posts[1][0], posts[1][1])
-direction = Vector(direction[0], direction[1])
-goal = Goal(post1, post2, direction)
-
-o = Opponent(Point(0, 0))
-angle = math.pi / 36
-s = Shot(o, angle)
-
-d = Defender(Point(1, 0), 0.5)
-
-opponents = []
-for opponent in problem.get_input_from_key("opponents"):
-    opponents.append(Opponent(Point(opponent[0], opponent[1])))
-
-radius = problem.get_input_from_key("robot_radius")
-theta_step = problem.get_input_from_key("theta_step")
-pos_step = problem.get_input_from_key("pos_step")
-
-s = time.time()
-
-graph.compute_graph(goal, pos_step, theta_step, opponents, bottom_left, top_right, radius)
-graph_sorted = graph.copy()
-
-graph.construct_deg(False)
-graph_sorted.construct_deg(True)
-
-print("Graph has been constructed!")
-
-e = time.time() - s
-print("Elapsed time (graph construction):", e, "seconds")
-
-s = time.time()
-
-res = None
-
-res = graph.solve(5)
-print(res)
-
-# for i in range(10):
-#     res = None
-#     print(i)
-#     if i <= 4:
-#         res = graph_sorted.solve(i)
-#     else:
-#         res = graph.solve(i)
-#     if res != None:
-#         for d in res:
-#             print(d.pos)
-#         break
-#     if i == 9:
-#         print("No solution!")
-
-e = time.time() - s
-print("Nb recursive calls:", graph.recursive_calls + graph_sorted.recursive_calls)
-print("Elapsed time (solving):", e, "seconds")
-
-data = {}
-data["defenders"] = []
-
-for r in res:
-    data["defenders"].append([r.pos.x, r.pos.y])
-
-with open('dumps/data.json', 'w') as f:
-    json.dump(data, f)
+# Fetch the results
+res = []
+JSonDecoder.save_json(res)
