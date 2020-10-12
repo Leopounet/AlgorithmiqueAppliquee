@@ -9,11 +9,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../'
 import src.Decoders.JSonDecoder as JSonDecoder
 from src.Problem import Problem
 from src.ProblemType import ProblemType
+from src.Utils.Graph import Graph
 import glob
 
 import math
 import time
 import json
+import random
 
 # Either the path to the problem is specified or the default one is used
 path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
@@ -24,8 +26,11 @@ if len(sys.argv) >= 2:
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
-print(problem)
+graph = Graph(problem)
+print(graph.nb_shots)
+
+
+res = graph.find_minimum_dominating_set(10000, 750, 0.90, 30)
 
 # Fetch the results
-res = []
 JSonDecoder.save_json(res)

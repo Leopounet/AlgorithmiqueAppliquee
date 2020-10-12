@@ -42,6 +42,18 @@ class Problem:
         # The type of problem
         self.type = ProblemType.UNDEFINED
 
+    def __getitem__(self, key):
+        """
+        Allows to type p[key] where p is a 'Problem' object and key is a valid key of 
+        the inputs dictionnary.
+
+        :param key: A valid key in inputs.
+        :return: The corresponding value to key in inputs, if the key is not valid, returns None.
+        """
+        if key not in self.inputs:
+            return None
+        return self.inputs[key]
+
     def __str__(self):
         """
         Allows the use of print(p) where p is a 'Problem' object.

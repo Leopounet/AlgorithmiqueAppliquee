@@ -352,6 +352,7 @@ class Goal:
         b = self.check_shot_direction(shot)
         c = self.check_shot_on_target(shot)
         return a and b and c
+
     def shot_intercepted(self, defender, shot):
         """
         Checks if the given shot is intercepted by the given player with regard to this goal.
@@ -430,7 +431,8 @@ class Goal:
         # iff the x coordinate of the intersection point of the defender and the shot
         # is between the goal and the opponent y coordinates
         if abs(shot.angle) == math.pi or shot.angle == 0:
-            return False
+            q = Point(le1.reverse(o_y), o_y)
+            return self.is_in_interval(min(q.x, o_x), max(q.x, o_x), p.x)
         
         # LE of the shot
         le2 = LinearEquation(tan_theta, o_y - tan_theta * o_x)

@@ -48,7 +48,7 @@ def decode(file):
 
         post1 = Point(posts[0][0], posts[0][1])
         post2 = Point(posts[1][0], posts[1][1])
-        direction = Vector(direction[0], direction[1])
+        direction = Vector(direction[0], -direction[1])
         goal = Goal(post1, post2, direction)
         res["goals"].append(goal)
 
