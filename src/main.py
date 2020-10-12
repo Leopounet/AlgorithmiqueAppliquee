@@ -11,7 +11,7 @@ from src.Problem import Problem
 from src.ProblemType import ProblemType
 import glob
 
-from src.Utils.Graph import Graph
+from src.Utils.TestGraph import TestGraph
 from src.Utils.Point import Point
 from src.Utils.Vector import Vector
 from src.Utils.UsefulTypes import Goal, Defender, Opponent, Shot
@@ -38,7 +38,7 @@ else:
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
-graph = Graph()
+graph = TestGraph()
 
 field_limits = problem.get_input_from_key("field_limits")
 bottom_left = Point(field_limits[0][0], field_limits[1][0])
@@ -84,22 +84,22 @@ s = time.time()
 
 res = None
 
-# res = graph_sorted.solve(5)
-# print(res)
+res = graph.solve(5)
+print(res)
 
-for i in range(10):
-    res = None
-    print(i)
-    if i <= 4:
-        res = graph_sorted.solve(i)
-    else:
-        res = graph.solve(i)
-    if res != None:
-        for d in res:
-            print(d.pos)
-        break
-    if i == 9:
-        print("No solution!")
+# for i in range(10):
+#     res = None
+#     print(i)
+#     if i <= 4:
+#         res = graph_sorted.solve(i)
+#     else:
+#         res = graph.solve(i)
+#     if res != None:
+#         for d in res:
+#             print(d.pos)
+#         break
+#     if i == 9:
+#         print("No solution!")
 
 e = time.time() - s
 print("Nb recursive calls:", graph.recursive_calls + graph_sorted.recursive_calls)

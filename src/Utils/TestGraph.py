@@ -12,7 +12,7 @@ This module is used to simulate graphs.
 Subject to a lot, lot of changes, yep.
 """
 
-class Graph:
+class TestGraph:
 
     """
     Graph encapsulates a broad definition of what is a graph. It is optimized to be used on this specific problem.
@@ -72,7 +72,7 @@ class Graph:
         self.nb_shots = 0
 
     def copy(self):
-        graph = Graph()
+        graph = TestGraph()
 
         graph.defenders = self.defenders.copy()
         graph.opponents = self.opponents.copy()
@@ -297,7 +297,7 @@ class Graph:
                 res += 1
         return size - res
 
-    def solve_(self, size, filled_triangles, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
+    def solve_(self, size, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -367,16 +367,11 @@ class Graph:
                     continue
 
                 tmp_dominant_set = dominated_set | self.edges[index]
-                # tmp_filled_triangles = filled_triangles | self.fill_triangles(filled_triangles, self.defenders[index].pos)
-
-                # if tmp_filled_triangles == filled_triangles:
-                #     index += 1
-                #     continue
 
                 # New defender added and solution checking
                 defenders_list.append(index)
                    
-                res = self.solve_(size-1, 0, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
 
                 # Remove current defender and go to the next one
                 del defenders_list[-1]
@@ -400,7 +395,7 @@ class Graph:
         for _ in self.triangles:
             filled_triangles.append(0)
 
-        return self.solve_(size, pow(2, len(self.triangles)), defenders_list, 0, 0, 0)
+        return self.solve_(size, defenders_list, 0, 0, 0)
      
     def swap(self, arr, i, j):
         tmp = arr[i]
