@@ -282,11 +282,13 @@ class Graph:
         return lst.copy()
 
     def fill_triangles(self, filled_triangles, point):
-        index = 0
+        res = 0
         for t in self.triangles:
             if t.point_in(point):
-                filled_triangles[index] = 1
-            index += 1
+                res = (res << 1) + 1
+            else:
+                res = res << 1
+        return res
 
     def count_not_filled(self, filled_triangles, size):
         res = 0
@@ -320,9 +322,6 @@ class Graph:
         """
 
         self.recursive_calls += 1
-
-        if self.count_not_filled(filled_triangles, size) < 0:
-            return None
 
         # If there isn't any more defender to add and the size of the team is still
         # not valid, return None (obviously we don't go further as
@@ -368,14 +367,16 @@ class Graph:
                     continue
 
                 tmp_dominant_set = dominated_set | self.edges[index]
-                tmp_filled_triangles = filled_triangles.copy()
+                # tmp_filled_triangles = filled_triangles | self.fill_triangles(filled_triangles, self.defenders[index].pos)
 
-                self.fill_triangles(tmp_filled_triangles, self.defenders[index].pos)
+                # if tmp_filled_triangles == filled_triangles:
+                #     index += 1
+                #     continue
 
                 # New defender added and solution checking
                 defenders_list.append(index)
                    
-                res = self.solve_(size-1, tmp_filled_triangles, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+                res = self.solve_(size-1, 0, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
 
                 # Remove current defender and go to the next one
                 del defenders_list[-1]
@@ -399,7 +400,7 @@ class Graph:
         for _ in self.triangles:
             filled_triangles.append(0)
 
-        return self.solve_(size, filled_triangles, defenders_list, 0, 0, 0)
+        return self.solve_(size, pow(2, len(self.triangles)), defenders_list, 0, 0, 0)
      
     def swap(self, arr, i, j):
         tmp = arr[i]

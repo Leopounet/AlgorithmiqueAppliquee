@@ -33,7 +33,7 @@ path = None
 if len(sys.argv) >= 2:
     path = sys.argv[1]
 else:
-    path = glob.glob("dumps/examples/problems/basic_problem_4.json")[0]
+    path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
 
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
@@ -84,9 +84,13 @@ s = time.time()
 
 res = None
 
+# res = graph_sorted.solve(5)
+# print(res)
+
 for i in range(10):
     res = None
-    if i <= len(opponents) - 1:
+    print(i)
+    if i <= 4:
         res = graph_sorted.solve(i)
     else:
         res = graph.solve(i)
