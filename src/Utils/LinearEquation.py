@@ -150,6 +150,13 @@ class LinearEquation:
 
     @classmethod
     def create_le_from_pa(self, point, angle):
+        """
+        Creates a new 'LinearEquation' object from a point and an angle.
+
+        :param point: A point that the line goes through.
+        :param angle: The angle of the line w.r.t the origin.
+        :return: The newly created 'LinearEquation' object.
+        """
         if abs(angle) == math.pi / 2:
             return None
 
@@ -158,6 +165,13 @@ class LinearEquation:
 
     @classmethod
     def create_le_from_pp(self, p1, p2):
+        """
+        Creates a new 'LinearEquation' object from two points.
+
+        :param point: A point that the line goes through.
+        :param point: Another point that the line goes through.
+        :return: The newly created 'LinearEquation' object.
+        """
         if p1.x == p2.x:
             return None
         
