@@ -62,9 +62,9 @@ class Graph:
         self.edges = []
         self.dominant_value = 0
 
-        self.max_deg = 0
+        self.min_deg_index = 0
+        self.min_deg = None
         self.deg = []
-        self.max_deg_after = []
 
         self.triangles = []
         self.nb_shots = 0
@@ -183,7 +183,7 @@ class Graph:
         :param goal: The goal (soon goals, I guess) to consider.
         :return: returns nothing.
         """
-
+        index = 0
         # x coordinate being considered
         # goes from left to right
         x = bottom_left.x
@@ -215,7 +215,7 @@ class Graph:
                         continue
 
                 else:
-                    if self.exists_collision_opponents(defender, self.problem["radius"]):
+                    if self.exists_collision_opponents(defender, self.problem["radius"] * 2):
 
                         # Okay so, putting a break here works somehow much better
                         # but neglects a lot of solutions
@@ -248,7 +248,11 @@ class Graph:
                 if edges != (self.dominant_value + 1) / 2:
                     self.defenders.append(defender)
                     self.edges.append(edges)
-                    self.max_deg = max(deg, self.max_deg)
+                    if self.min_deg == None:
+                        self.min_deg = deg
+                    self.min_deg = min(self.min_deg, deg)
+                    self.min_deg_index = index
+                    index += 1
                     self.deg.append(deg)
                 
                 y += step
@@ -302,6 +306,7 @@ class Graph:
         s = []
         p = []
         index = 0
+
         while coloration != self.dominant_value:
 
             if index == len(permutation):
@@ -374,7 +379,7 @@ class Graph:
                     s, p = self.find_dominating_set(self.gen_perm(len(self.defenders)))
 
             self.jump(random.randint(1, len(self.defenders) - 1), p)
-            s2, p2 = self.find_dominating_set(self.gen_perm(len(self.defenders)))
+            s2, p2 = self.find_dominating_set(p)
 
             i = i + 1 if len(s2) >= len(s) else 0
             if len(s2) <= len(s):
@@ -387,6 +392,7 @@ class Graph:
                     ext = True
                     tries = init_tries
                     prob = prob / 1.2
+                    i_m = i_m * 1.2
             
             if len(s2) >= len(s):
                 i += 1
@@ -400,4 +406,38 @@ class Graph:
         for i in s_best:
             res.append(self.defenders[i])
         return res
+
+    def swap(self, arr, i, j):
+        tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+
+    def bubble_sort(self):
+        for i in range(0, len(self.deg)):
+            for j in range(0, len(self.deg) - i - 1):
+                if self.deg[j] > self.deg[j+1]:
+                    self.swap(self.deg, j, j+1)
+                    self.swap(self.defenders, j, j+1)
+                    self.swap(self.edges, j, j+1)
+
+    def connected(self, d, u):
+        res = 0
+        for i in d:
+            if i != u:
+                res = self.edges[i] | res
+
+        return res == self.dominant_value
+
+    def in_array(self, f, el):
+        for i in f:
+            if el == i:
+                return True
+        return False
+
+    def all_in(self, d, f):
+        for i in d:
+            if not self.in_array(f, i):
+                return False
+        return True
+                
 

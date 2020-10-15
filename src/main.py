@@ -27,10 +27,10 @@ problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
 graph = Graph(problem)
-print(graph.nb_shots)
 
+graph.bubble_sort()
 
-res = graph.find_minimum_dominating_set(10000, 750, 0.90, 30)
+res = graph.find_minimum_dominating_set(10000, 100, 0.99, 10)
 
 # Fetch the results
 JSonDecoder.save_json(res)
