@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
+from src.Utils.Vector import Vector
 from src.Utils.Point import Point
 from src.Utils.ConvexShape import ConvexShape
 from src.Utils.UsefulTypes import Opponent, Shot, Defender
@@ -67,6 +68,8 @@ class Graph:
         self.deg = []
 
         self.triangles = []
+        self.total_distance_defender = []
+
         self.nb_shots = 0
 
         self.problem = problem
@@ -150,6 +153,27 @@ class Graph:
                 
                 self.shots.append(tmp.copy())
 
+    def perfect_distance_from_triangle(self, triangle, point, radius):
+        v1 = Vector.v_from_pp(triangle.points[0], triangle.points[1])
+        v2 = Vector.v_from_pp(triangle.points[0], triangle.points[2])
+
+        angle = v2.angle(v1) / 2
+
+        if abs(angle) == math.pi / 2 or angle == 0 or abs(angle) == math.pi:
+            return 100
+
+        opt = radius / math.tan(angle) + radius
+        return opt
+
+    def compute_distance_sum(self, defender, index_tr, index_def):
+        opt = self.perfect_distance_from_triangle(self.triangles[index_tr], defender.pos, defender.radius)
+        dst = defender.pos.distance(self.triangles[index_tr].points[0])
+
+        if len(self.total_distance_defender) <= index_def:
+            self.total_distance_defender.append(abs(opt - dst))
+        else:
+            min(self.total_distance_defender[index_def], abs(opt - dst))
+
     def exists_collision_opponents(self, defender, radius):
         """
         Check if there exists a collision between at least one opponent and one defender.
@@ -231,6 +255,7 @@ class Graph:
                 # the list
                 for i in range(len(self.triangles)):
                     if i in in_triangle:
+                        self.compute_distance_sum(defender, i, index)
                         for shot in self.shots[i]:
                             if self.exist_goal(defender, shot, goals):
                                     
@@ -254,6 +279,8 @@ class Graph:
                     self.min_deg_index = index
                     index += 1
                     self.deg.append(deg)
+                else:
+                    del self.total_distance_defender[-1]
                 
                 y += step
             x += step
@@ -366,7 +393,11 @@ class Graph:
         i = 0
         i_max = i_m
 
-        s_best = self.gen_perm(len(self.defenders))
+        init = []
+        for i in range(len(self.defenders)):
+            init.append(i)
+
+        s_best, perm = self.find_dominating_set(init)
 
         s_time = time.time()
 
@@ -413,10 +444,10 @@ class Graph:
         arr[j] = tmp
 
     def bubble_sort(self):
-        for i in range(0, len(self.deg)):
-            for j in range(0, len(self.deg) - i - 1):
-                if self.deg[j] > self.deg[j+1]:
-                    self.swap(self.deg, j, j+1)
+        for i in range(0, len(self.total_distance_defender)):
+            for j in range(0, len(self.total_distance_defender) - i - 1):
+                if self.total_distance_defender[j] > self.total_distance_defender[j+1]:
+                    self.swap(self.total_distance_defender, j, j+1)
                     self.swap(self.defenders, j, j+1)
                     self.swap(self.edges, j, j+1)
 

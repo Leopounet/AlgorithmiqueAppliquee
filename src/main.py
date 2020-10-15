@@ -30,7 +30,7 @@ graph = Graph(problem)
 
 graph.bubble_sort()
 
-res = graph.find_minimum_dominating_set(10000, 100, 0.99, 10)
+res = graph.find_minimum_dominating_set(10000, 100, 0.4, 5)
 
 # Fetch the results
 JSonDecoder.save_json(res)
