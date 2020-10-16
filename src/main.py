@@ -10,6 +10,8 @@ import src.Decoders.JSonDecoder as JSonDecoder
 from src.Problem import Problem
 from src.ProblemType import ProblemType
 from src.Utils.Graph import Graph
+from src.Solvers.RandomSolver import RandomSolver
+from src.Solvers.BruteForceSolver import BruteForceSolver
 import glob
 
 import math
@@ -28,9 +30,11 @@ problem.decode(path)
 
 graph = Graph(problem)
 
-graph.bubble_sort()
+r_solver = RandomSolver(graph)
+bf_solver = BruteForceSolver(graph) 
 
-res = graph.find_minimum_dominating_set(10000, 100, 0.4, 5)
+# res = r_solver.solve(10000, 100, 0.2, 5, compare_func=lambda x, y : x > y)
+res = bf_solver.solve(compare_func=lambda x, y: x > y)
 
 # Fetch the results
 JSonDecoder.save_json(res)

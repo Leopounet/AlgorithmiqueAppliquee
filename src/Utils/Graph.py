@@ -64,7 +64,10 @@ class Graph:
         self.dominant_value = 0
 
         self.min_deg_index = 0
+        self.max_deg_index = 0
         self.min_deg = None
+        self.max_deg = 0
+        self.max_deg_after = []
         self.deg = []
 
         self.triangles = []
@@ -82,29 +85,49 @@ class Graph:
         For instance, dominant_values can only exist if the the set of shots is complete and 
         the computation of the positions is only possible with the set of shots and the 
         dominant value.
-
-        Please improve the argument list, like ew. Create a class maybe?
         """
+        # Computes all valid shots
         self.opponents = problem["opponents"]
         self.compute_all_shots(problem["opponents"], problem["theta_step"], problem["goals"])
-        self.interesting_points(problem["goals"], problem["radius"])
         self.dominant_value = pow(2, self.nb_shots + 1) - 1
+
+        # Computes all interesting position (those that stop at least one shot)
+        self.compute_triangles(problem["goals"], problem["radius"])
         self.compute_all_positions(problem["bottom_left"], problem["top_right"], 
                                    problem["pos_step"], problem["radius"], problem["goals"])
 
     def compute_default_triangles(self, goal):
+        """
+        Computes triangles from all opponents to a given goal.
+
+        :param goal: The goal to consider.
+        :return: The list of triangles.
+        """
         triangles = []
         for opponent in self.opponents:
             triangles.append(ConvexShape.compute_triangle(opponent, goal))
         return triangles.copy()
 
     def compute_new_triangles(self, triangles, radius):
+        """
+        Computes a bigger triangle to account for the radius of the robots.
+
+        :param triangles: The list of created triangles.
+        :param radius: The radius of the robots.
+        :return: A new list of triangles.
+        """
         new_triangles = []
         for triangle in triangles:
             new_triangles.append(ConvexShape.compute_bigger_triangle(triangle, radius))
-        return new_triangles
+        return new_triangles.copy()
 
     def point_in_triangles(self, point):
+        """
+        Computes the list of all triangles the point is in.
+
+        :param point: The point to check.
+        :return: The list of triangles the point is in.
+        """
         tmp = []
         index = 0
         for triangle in self.triangles:
@@ -113,7 +136,19 @@ class Graph:
             index += 1
         return tmp.copy()
 
-    def interesting_points(self, goals, radius):
+    def compute_triangles(self, goals, radius):
+        """
+        Computes the list of all the triangles to consider. 
+
+        A triangle is a zone delimited by three points: an opponent and two goal posts. Here
+        all the possible triangles are computed. All shots are guaranteed to be represented by those triangles.
+        The triangles computes are a bit bigger to account for the size of the robots (a defender might 
+        not be in the original triangle and still stop a shot).
+
+        :param goals: The list of goals.
+        :param radius: Teh radius of the robots.
+        :return: returns nothing.
+        """
         for goal in goals:
             self.triangles += self.compute_new_triangles(self.compute_default_triangles(goal), radius)
 
@@ -153,7 +188,16 @@ class Graph:
                 
                 self.shots.append(tmp.copy())
 
-    def perfect_distance_from_triangle(self, triangle, point, radius):
+    def perfect_distance_from_triangle(self, triangle, radius):
+        """
+        Computes the perfect distance for a defender to be, with regard
+        to a triangle representing a set of valid shots. A perfect distance is
+        the maximum distance from the opponent at which the defender can be and stop all the shots.
+
+        :param triangle: The set of shots to consider.
+        :param radius: The radius of the robots.
+        :return: The perfect distance for this set of shots. 
+        """
         v1 = Vector.v_from_pp(triangle.points[0], triangle.points[1])
         v2 = Vector.v_from_pp(triangle.points[0], triangle.points[2])
 
@@ -166,13 +210,21 @@ class Graph:
         return opt
 
     def compute_distance_sum(self, defender, index_tr, index_def):
-        opt = self.perfect_distance_from_triangle(self.triangles[index_tr], defender.pos, defender.radius)
+        """
+        Computes a value to know how optimal a defender's position is.
+
+        :param defender: The defender ton consider.
+        :param index_tr: Index correspoding to the current triangle.
+        :param index_def: The index correspoding to the current defender.
+        :return: returns nothing.
+        """
+        opt = self.perfect_distance_from_triangle(self.triangles[index_tr], defender.radius)
         dst = defender.pos.distance(self.triangles[index_tr].points[0])
 
         if len(self.total_distance_defender) <= index_def:
             self.total_distance_defender.append(abs(opt - dst))
         else:
-            min(self.total_distance_defender[index_def], abs(opt - dst))
+            self.total_distance_defender[index_def] = min(self.total_distance_defender[index_def], abs(opt - dst))
 
     def exists_collision_opponents(self, defender, radius):
         """
@@ -187,6 +239,15 @@ class Graph:
         return False
 
     def exist_goal(self, defender, shot, goals):
+        """
+        Checks if the current defender intercepts the shot, with regard to at least
+        one goal.
+
+        :param defender: The defender that should intercept a shot.
+        :param shot: The shot to intercept.
+        :param goals: The list of goals to check.
+        :return: True if the defender intercepts at least one shot, False otherwise.
+        """
         for goal in goals:
             if goal.shot_intercepted(defender, shot):
                 return True
@@ -276,9 +337,11 @@ class Graph:
                     if self.min_deg == None:
                         self.min_deg = deg
                     self.min_deg = min(self.min_deg, deg)
+                    self.max_deg = max(self.max_deg, deg)
                     self.min_deg_index = index
-                    index += 1
+                    self.max_deg_index = index
                     self.deg.append(deg)
+                    index += 1
                 else:
                     del self.total_distance_defender[-1]
                 
@@ -304,171 +367,56 @@ class Graph:
                 return False
         return True
 
-    def check_redundancy(self, def_list, new_def):
-        index = 0
-        to_delete = []
-        for d in def_list:
-            
-            res = self.edges[new_def]
-
-            index2 = 0
-            for d2 in def_list:
-
-                if d != d2 and index2 not in to_delete:
-                    res = res | self.edges[d2]
-
-                index2 += 1
-
-            if (self.edges[d] | res) == res:
-                to_delete.append(index)
-            index += 1
-
-        return to_delete.copy()
-
-
-    def find_dominating_set(self, permutation, coloration=0):
-        """
-        This method should return a dominating set of G (not a minimum one though).
-        """
-        s = []
-        p = []
-        index = 0
-
-        while coloration != self.dominant_value:
-
-            if index == len(permutation):
-                random.shuffle(permutation)
-                index = 0
-                s = []
-                coloration = 0
-
-            p_i = permutation[index]
-
-            if not self.valid_defender(s, p_i):
-                p.append(p_i)
-                index += 1
-                continue
-
-            new_coloration = coloration | self.edges[p_i]
-            if new_coloration != coloration:
-
-                to_delete = self.check_redundancy(s, p_i)
-                shift = 0
-                for i in to_delete:
-                    p.append(s[i - shift])
-                    del s[i - shift]
-                    shift += 1
-                
-                s.append(p_i)
-                coloration = new_coloration
-            else:
-                p.append(p_i)
-            index += 1
-
-        p += permutation[index:]
-        random.shuffle(p)
-        return (s.copy(), (s + p).copy())
-
-    def jump(self, n, p):
-        tmp = p[n]
-        for i in range(1, n):
-            p[n - i - 1] = p[n - i - 2]
-        p[0] = tmp
-
-    def gen_perm(self, size):
-        perm = []
-        for i in range(size):
-            perm.append(i)
-        random.shuffle(perm)
-        return perm.copy()
-
-    def find_minimum_dominating_set(self, tries, i_m, prob, timeout, perm=None):
-        init_tries = tries
-
-        s = None
-        p = perm
-
-        ext = False
-
-        i = 0
-        i_max = i_m
-
-        init = []
-        for i in range(len(self.defenders)):
-            init.append(i)
-
-        s_best, perm = self.find_dominating_set(init)
-
-        s_time = time.time()
-
-        while tries > 0:
-            if (ext == False and i > i_max) or ext or p == None:
-                if random.uniform(0, 1) < prob and p != None:
-                    s, p = self.find_dominating_set(p)
-                    init_tries = tries
-                else:
-                    s, p = self.find_dominating_set(self.gen_perm(len(self.defenders)))
-
-            self.jump(random.randint(1, len(self.defenders) - 1), p)
-            s2, p2 = self.find_dominating_set(p)
-
-            i = i + 1 if len(s2) >= len(s) else 0
-            if len(s2) <= len(s):
-                p = p2.copy()
-                s = s2.copy()
-                if len(s_best) > len(s):
-                    print(len(s))
-                    i = 0
-                    s_best = s.copy()
-                    ext = True
-                    tries = init_tries
-                    prob = prob / 1.2
-                    i_m = i_m * 1.2
-            
-            if len(s2) >= len(s):
-                i += 1
-
-            tries -= 1
-
-            if time.time() - s_time > timeout:
-                break
-   
-        res = []
-        for i in s_best:
-            res.append(self.defenders[i])
-        return res
-
     def swap(self, arr, i, j):
+        """
+        Swaps two elements of an array.
+
+        :param arr: The array to consider.
+        :param i: The index of the first element.
+        :param j: The index of the second element.
+        :return: returns nothing.
+        """
         tmp = arr[i]
         arr[i] = arr[j]
         arr[j] = tmp
 
-    def bubble_sort(self):
-        for i in range(0, len(self.total_distance_defender)):
-            for j in range(0, len(self.total_distance_defender) - i - 1):
-                if self.total_distance_defender[j] > self.total_distance_defender[j+1]:
-                    self.swap(self.total_distance_defender, j, j+1)
-                    self.swap(self.defenders, j, j+1)
-                    self.swap(self.edges, j, j+1)
+    def bubble_sort(self, arrays, compare_func):
+        """
+        Sorts a set of arrays according to the first array given (it is useful to preserve 1-to-1
+        relations in different arrays while sorting a specific one).
 
-    def connected(self, d, u):
-        res = 0
-        for i in d:
-            if i != u:
-                res = self.edges[i] | res
+        :param arrays: A list of arrays, the first one should be the one to sort. Note that all arrays
+        must have the same size.
+        :param compare_func: The function to use to sort the arrays (e.g: fun x y -> x < y).
+        :return: returns nothing.
+        """
+        to_sort = arrays[0]
+        for i in range(0, len(to_sort)):
+            for j in range(0, len(to_sort) - i - 1):
 
-        return res == self.dominant_value
+                # If the given comparing function is satisfied, sort all arrays
+                if compare_func(to_sort[j], to_sort[j+1]):
+                    for arr in arrays:
+                        self.swap(arr, j, j+1)
 
-    def in_array(self, f, el):
-        for i in f:
-            if el == i:
-                return True
-        return False
+    def index_list_to_defenders(self, indices):
+        res = []
+        for i in indices:
+            res.append(self.defenders[i])
+        return res.copy()
 
-    def all_in(self, d, f):
-        for i in d:
-            if not self.in_array(f, i):
-                return False
-        return True
+    def __str__(self):
+        """
+        Converts the graph to a string and allows us to type things like
+        print(graph).
+
+        :return: The string corresponding to the graph.
+        """
+        res = ""
+        for x in self.edges:
+            res += str(bin(x))[2:]
+            res += "\n"
+            
+        return res
                 
 
