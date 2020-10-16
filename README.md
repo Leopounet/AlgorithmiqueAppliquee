@@ -1,2 +1,2 @@
 # AlgorithmiqueAppliquee
-Projet d'algorithmique appliquée M2.
+Projet d'algorithmique appliquée M2!
