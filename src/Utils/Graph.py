@@ -79,16 +79,16 @@ class Graph:
 
         self.compute_graph(problem)
 
-        self.adjacency_matrix = {}
+        self.adjacency_matrix = []
 
     def compute_adjacency_matrix(self):
         for i in range(len(self.edges)):
-            name = "d" + str(i)
-            self.adjacency_matrix[name] = []
             neighbors = str(bin(self.edges[i])[2:])
+            tmp = []
 
             for j in range(1, len(neighbors)):
-                self.adjacency_matrix[name].append(int(neighbors[j]))
+                tmp.append(int(neighbors[j]))
+            self.adjacency_matrix.append(tmp.copy())
 
     def compute_graph(self, problem):
         """

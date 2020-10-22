@@ -31,7 +31,7 @@ problem.decode(path)
 graph = Graph(problem)
 graph.compute_adjacency_matrix()
 for i in graph.adjacency_matrix:
-    print(i + " " + str(graph.adjacency_matrix[i]))
+    print(i)
 
 # r_solver = RandomSolver(graph)
 # bf_solver = BruteForceSolver(graph) 
