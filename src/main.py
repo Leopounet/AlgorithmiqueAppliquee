@@ -34,7 +34,7 @@ graph.compute_adjacency_matrix()
 r_solver = RandomSolver(graph)
 # bf_solver = BruteForceSolver(graph) 
 
-res = r_solver.solve(10000, 100, 0.2, 5, compare_func=lambda x, y : x > y)
+res = r_solver.solve(10000, 100, 0.2, 0.5, compare_func=lambda x, y : x > y)
 # # res = bf_solver.solve(compare_func=lambda x, y: x > y)
 
 # # Fetch the results

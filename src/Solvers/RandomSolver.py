@@ -124,6 +124,8 @@ class RandomSolver(Solver):
         s_best, perm = self.find_dominating_set(init, s_time, timeout)
 
         while tries > 0:
+#            if (len(s_best) <= len(self.graph.opponents) ) :
+#                break
             if (ext == False and i > i_max) or ext or p == None:
                 if random.uniform(0, 1) < prob and p != None:
                     s, p = self.find_dominating_set(p, s_time, timeout)
