@@ -48,7 +48,7 @@ class RandomSolver(Solver):
         return to_delete.copy()
 
 
-    def find_dominating_set(self, permutation, coloration=0):
+    def find_dominating_set(self, permutation, s_time, timeout, coloration=0):
         """
         This method should return a dominating set of G (not a minimum one though).
         """
@@ -57,6 +57,9 @@ class RandomSolver(Solver):
         index = 0
 
         while coloration != self.graph.dominant_value:
+
+            if time.time() - s_time > timeout:
+                break
 
             if index == len(permutation):
                 random.shuffle(permutation)
@@ -119,20 +122,20 @@ class RandomSolver(Solver):
         for i in range(len(self.graph.defenders)):
             init.append(i)
 
-        s_best, perm = self.find_dominating_set(init)
-
         s_time = time.time()
+
+        s_best, perm = self.find_dominating_set(init, s_time, timeout)
 
         while tries > 0:
             if (ext == False and i > i_max) or ext or p == None:
                 if random.uniform(0, 1) < prob and p != None:
-                    s, p = self.find_dominating_set(p)
+                    s, p = self.find_dominating_set(p, s_time, timeout)
                     init_tries = tries
                 else:
-                    s, p = self.find_dominating_set(self.gen_perm(len(self.graph.defenders)))
+                    s, p = self.find_dominating_set(self.gen_perm(len(self.graph.defenders)), s_time, timeout)
 
             self.jump(random.randint(1, len(self.graph.defenders) - 1), p)
-            s2, p2 = self.find_dominating_set(p)
+            s2, p2 = self.find_dominating_set(p, s_time, timeout)
 
             i = i + 1 if len(s2) >= len(s) else 0
             if len(s2) <= len(s):

@@ -79,6 +79,17 @@ class Graph:
 
         self.compute_graph(problem)
 
+        self.adjacency_matrix = {}
+
+    def compute_adjacency_matrix(self):
+        for i in range(len(self.edges)):
+            name = "d" + str(i)
+            self.adjacency_matrix[name] = []
+            neighbors = str(bin(self.edges[i])[2:])
+
+            for j in range(1, len(neighbors)):
+                self.adjacency_matrix[name].append(int(neighbors[j]))
+
     def compute_graph(self, problem):
         """
         Computes all the vertices and edges of the graph. The order of operation here is critical.
