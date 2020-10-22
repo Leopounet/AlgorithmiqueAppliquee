@@ -58,9 +58,6 @@ class RandomSolver(Solver):
 
         while coloration != self.graph.dominant_value:
 
-            if time.time() - s_time > timeout:
-                break
-
             if index == len(permutation):
                 random.shuffle(permutation)
                 index = 0
