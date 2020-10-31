@@ -20,7 +20,7 @@ import json
 import random
 
 # Either the path to the problem is specified or the default one is used
-path = glob.glob("dumps/examples/problems/basic_problem_3.json")[0]
+path = glob.glob("dumps/examples/problems/goal_keeper_problem_1.json")[0]
 if len(sys.argv) >= 2:
     path = sys.argv[1]
 

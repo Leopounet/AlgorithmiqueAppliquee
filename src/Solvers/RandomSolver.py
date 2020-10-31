@@ -58,6 +58,9 @@ class RandomSolver(Solver):
 
         while coloration != self.graph.dominant_value:
 
+            if time.time() - s_time > timeout:
+                return (None, None)
+
             if index == len(permutation):
                 random.shuffle(permutation)
                 index = 0
@@ -124,8 +127,7 @@ class RandomSolver(Solver):
         s_best, perm = self.find_dominating_set(init, s_time, timeout)
 
         while tries > 0:
-#            if (len(s_best) <= len(self.graph.opponents) ) :
-#                break
+            
             if (ext == False and i > i_max) or ext or p == None:
                 if random.uniform(0, 1) < prob and p != None:
                     s, p = self.find_dominating_set(p, s_time, timeout)
@@ -133,8 +135,14 @@ class RandomSolver(Solver):
                 else:
                     s, p = self.find_dominating_set(self.gen_perm(len(self.graph.defenders)), s_time, timeout)
 
+            if s == None:
+                break
+
             self.jump(random.randint(1, len(self.graph.defenders) - 1), p)
             s2, p2 = self.find_dominating_set(p, s_time, timeout)
+
+            if s2 == None:
+                break
 
             i = i + 1 if len(s2) >= len(s) else 0
             if len(s2) <= len(s):
