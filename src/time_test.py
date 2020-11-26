@@ -54,8 +54,9 @@ for i in range(100) :
 
     end = time.time()
     times.append(end-start)
-    print(i+1)
-    print(sum(times)/len(times))
+    print("Solution of size " + str(len(res)) + " found in " + str(times[-1]))
+    print("Current average is: " + str(sum(times)/len(times)))
+    print("----------------------------------------")
 
 print("Average time measured over 300 random problems using random solver")
 print("number of opponent between 3 and 6")

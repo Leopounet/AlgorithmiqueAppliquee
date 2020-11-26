@@ -149,7 +149,6 @@ class RandomSolver(Solver):
                 p = p2.copy()
                 s = s2.copy()
                 if len(s_best) > len(s):
-                    print(len(s))
                     i = 0
                     s_best = s.copy()
                     ext = True
