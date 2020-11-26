@@ -88,7 +88,7 @@ def problem_generator(type):
                     })
 
 
-    with open('dumps/examples/problems/'+ type + '_problem.json', 'w') as f:
+    with open('dumps/'+ type + '_problem.json', 'w') as f:
             json.dump(tmp, f)
 
 # Problem incompatibilities :
