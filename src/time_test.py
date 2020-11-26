@@ -43,6 +43,8 @@ for i in range(100) :
     # bf_solver = BruteForceSolver(graph)
 
     res = r_solver.solve(10000, 100, 0.2, 0.5, compare_func=lambda x, y : x > y)
+    if res == None:
+        continue
     # res = bf_solver.solve(compare_func=lambda x, y: x > y)
 
     # print("here ?")

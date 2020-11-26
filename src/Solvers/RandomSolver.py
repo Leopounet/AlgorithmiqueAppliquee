@@ -166,6 +166,8 @@ class RandomSolver(Solver):
                 break
    
         res = []
+        if s_best == None:
+            return None
         for i in s_best:
             res.append(self.graph.defenders[i])
         return res
