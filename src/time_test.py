@@ -22,7 +22,7 @@ import random
 
 times = []
 
-for i in range(300) :
+for i in range(100) :
     problem_generator('B')
 
     # Either the path to the problem is specified or the default one is used
@@ -55,6 +55,6 @@ for i in range(300) :
     print(i+1)
     print(sum(times)/len(times))
 
-print("Average time measured over 300 random problems")
+print("Average time measured over 300 random problems using random solver")
 print("number of opponent between 3 and 6")
 print(sum(times)/len(times))
