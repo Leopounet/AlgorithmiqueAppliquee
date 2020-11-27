@@ -108,9 +108,9 @@ class BruteForceSolver(Solver):
         # If the previous defender didn't yield any valid solution, return None
         return None
 
-    def solve(self, compare_func=None):
-        if compare_func != None:
-            self.sort(compare_func)
+    def solve(self, params):
+        if params.compare_func != None:
+            self.sort(params.compare_func)
         self.construct_deg()
 
         res = None

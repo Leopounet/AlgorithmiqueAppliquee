@@ -12,6 +12,8 @@ from src.ProblemType import ProblemType
 from src.Utils.Graph import Graph
 from src.Solvers.RandomSolver import RandomSolver
 from src.Solvers.BruteForceSolver import BruteForceSolver
+from src.Solvers.GreedySolver import GreedySolver
+from src.Solvers.SolverArgs import SolverArgs
 from src.ProblemGenerator import problem_generator
 import glob
 
@@ -22,42 +24,62 @@ import random
 
 times = []
 
+greedy_args = SolverArgs()
+random_args = SolverArgs()
+random_args.compare_func = lambda x, y : x > y
+random_args.tries = 10000
+random_args.i_m = 100
+random_args.prob = 0.2
+random_args.timeout = 0.5
+
+def run(solver, graph, problem, args):
+    start = time.time()
+
+    res = solver.solve(args)
+
+    if res == None:
+        return None
+
+    end = time.time()
+    print("Solution of size " + str(len(res)) + " for " + str(len(problem["opponents"])) + " opponents found in " + str(end - start))
+    return (end - start, len(res), len(problem["opponents"]))
+
+random_def = []
+greedy_def = []
+ratio_def = []
+random_time = []
+greedy_time = []
+
 for i in range(100) :
     problem_generator('B')
 
-    # Either the path to the problem is specified or the default one is used
-    path = glob.glob("dumps/B_problem.json")[0]
-    if len(sys.argv) >= 2:
-        path = sys.argv[1]
-
     # Create the problem
     problem = Problem(JSonDecoder.decode)
-    problem.decode(path)
-
-    start = time.time()
+    problem.decode("dumps/B_problem.json")
 
     graph = Graph(problem)
     graph.compute_adjacency_matrix()
 
     r_solver = RandomSolver(graph)
-    # bf_solver = BruteForceSolver(graph)
+    g_solver = GreedySolver(graph)
 
-    res = r_solver.solve(10000, 100, 0.2, 0.5, compare_func=lambda x, y : x > y)
-    if res == None:
+    print("RANDOM: ", end="")
+    res1 = run(r_solver, graph, problem, random_args)
+    print("GREEDY: ", end="")
+    res2 = run(g_solver, graph, problem, greedy_args)
+
+    if res1 == None or res2 == None:
         continue
-    # res = bf_solver.solve(compare_func=lambda x, y: x > y)
 
-    # print("here ?")
-
-    # # Fetch the results
-    JSonDecoder.save_json(res)
-
-    end = time.time()
-    times.append(end-start)
-    print("Solution of size " + str(len(res)) + " found in " + str(times[-1]))
-    print("Current average is: " + str(sum(times)/len(times)))
+    random_def.append(res1[1])
+    greedy_def.append(res2[1])
+    ratio_def.append(res1[1] / res2[1])
+    random_time.append(res1[0])
+    greedy_time.append(res2[0])
     print("----------------------------------------")
 
-print("Average time measured over 300 random problems using random solver")
-print("number of opponent between 3 and 6")
-print(sum(times)/len(times))
+print(sum(ratio_def)/len(ratio_def))
+
+# print("Average time measured over 300 random problems using random solver")
+# print("number of opponent between 3 and 6")
+# print(sum(times)/len(times))

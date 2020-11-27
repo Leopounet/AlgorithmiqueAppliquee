@@ -21,10 +21,10 @@ class RandomSolver(Solver):
     def __init__(self, graph):
         super().__init__(graph)
 
-    def solve(self, tries, i_m, prob, timeout, perm=None, compare_func=None):
-        if compare_func != None:
-            self.sort(compare_func)
-        return self.find_minimum_dominating_set(tries, i_m, prob, timeout, perm)
+    def solve(self, params): 
+        if params.compare_func != None:
+            self.sort(params.compare_func)
+        return self.find_minimum_dominating_set(params.tries, params.i_m, params.prob, params.timeout, params.perm)
 
     def check_redundancy(self, def_list, new_def):
         index = 0

@@ -49,7 +49,15 @@ class GreedySolver:
                 changed = True
         return (new_list.copy(), changed)
 
-    def solve(self):
+    def has_solution(self):
+        s = 0
+        for e in self.graph.edges:
+            s = s | e
+        return s == self.graph.dominant_value
+
+    def solve(self, params):
+        if not self.has_solution():
+            return None
         edges = self.graph.edges.copy()
         res = self._solve(0, [])
         changed = True
