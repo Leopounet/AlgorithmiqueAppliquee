@@ -347,10 +347,12 @@ class Graph:
                     self.edges.append(edges)
                     if self.min_deg == None:
                         self.min_deg = deg
-                    self.min_deg = min(self.min_deg, deg)
-                    self.max_deg = max(self.max_deg, deg)
-                    self.min_deg_index = index
-                    self.max_deg_index = index
+                    if self.max_deg != max(self.max_deg, deg):
+                        self.max_deg = deg
+                        self.max_deg_index = index
+                    if self.min_deg != min(self.min_deg, deg):
+                        self.min_deg = deg
+                        self.min_deg_index = index
                     self.deg.append(deg)
                     index += 1
                 else:
