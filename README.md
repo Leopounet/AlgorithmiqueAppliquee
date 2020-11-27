@@ -28,6 +28,11 @@ Lancer le solveur sur un problème donné, puis ouvrir le visualiseur:
 
 `./run.sh <file> <solveur>`
 
+## Le solveur random
+
+Les paramètres du solveur random peuvent être modifiés dans le fichier `test.py` (dans la partie variable). Les autres
+solveurs n'ont pas de paramètres intéressants à modifier.
+
 # Remerciement
 
 Le code du visualiseur peut être trouvé [ici](https://www.labri.fr/perso/lhofer/index.php?page=teaching/algorithmique_appliquee/index).
