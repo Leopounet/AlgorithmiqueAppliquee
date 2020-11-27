@@ -34,7 +34,7 @@ def problem_generator(type):
     tmp["theta_step"] = 0.031416
     tmp["pos_step"] = 0.1
 
-    rng = random.randint(3,6)
+    rng = random.randint(3,10)
 
     while len(tmp["opponents"]) < rng :
         x = random.uniform(tmp["field_limits"][0][0],tmp["field_limits"][0][1])

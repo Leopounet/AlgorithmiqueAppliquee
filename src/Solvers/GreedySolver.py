@@ -5,16 +5,22 @@ class GreedySolver:
         self.max_uncovered = graph.max_deg_index
         self.max_current = 0
         self.compensation = int((self.graph.dominant_value + 1) / 2)
+        self.max_index = len(self.graph.edges) - 1
 
     def remove_uncovered(self, index):
         tmp_max_uncovered = 0
         val1 = self.graph.edges[index]
-        for i in range(len(self.graph.edges)):
+        i = 0
+        while i < self.max_index:
             self.graph.edges[i] = ((val1 ^ self.graph.edges[i]) + self.compensation) & self.graph.edges[i]
+            if self.graph.edges[i] == self.graph.dominant_value:
+                self.graph.edges[i] = self.graph.edges[self.max_index]
+                self.max_index -= 1
             count = bin(self.graph.edges[i]).count('1')
             if count > self.max_current:
                 tmp_max_uncovered = i
                 self.max_current = count
+            i += 1
         self.max_uncovered = tmp_max_uncovered
 
     def _solve(self, dom_val, def_list, depth=0):
