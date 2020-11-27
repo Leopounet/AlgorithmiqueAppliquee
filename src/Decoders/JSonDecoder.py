@@ -98,5 +98,5 @@ def save_json(defenders, name="data.json"):
     for r in defenders:
         data["defenders"].append([r.pos.x, r.pos.y])
 
-    with open('dumps/data.json', 'w') as f:
+    with open(name, 'w') as f:
         json.dump(data, f)

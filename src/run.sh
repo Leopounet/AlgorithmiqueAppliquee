@@ -1,8 +1,13 @@
-if [[ ! ($# -eq 0) ]]; then
-    python3 main.py $1
-    cd ../ssl_defender_viewer
-    python3 main.py ../src/$1 ../src/dumps/data.json
-    cd ../src/
+if [[ ! ($# -le 1) ]]; then
+    python3 test.py $1 $2
+    echo $?
+    if [[ $? = 0 ]]; then
+        cd ../ssl_defender_viewer
+        python3 main.py ../src/$1 ../src/data.json
+        cd ../src/
+    fi
 else
-    echo "Please specify a path to a problem to solve!"
+    echo "Usage: python3 test.py <file> <solveur>"
+    echo "file: chemin vers le problème à résoudre"
+    echo "solveur: le solveur à utiliser greedy|random|brute"
 fi
