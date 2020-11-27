@@ -1,6 +1,5 @@
 if [[ ! ($# -le 1) ]]; then
     python3 test.py $1 $2
-    echo $?
     if [[ $? = 0 ]]; then
         cd ../ssl_defender_viewer
         python3 main.py ../src/$1 ../src/data.json
