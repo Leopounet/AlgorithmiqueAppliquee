@@ -2,7 +2,7 @@ import numpy as np
 import json
 import random
 
-def problem_generator(type):
+def problem_generator(type, opponents=None):
     """
     This function saves a random problem as json file. The saved file 
     will be located in src/dumps/examples/problems.
@@ -34,7 +34,11 @@ def problem_generator(type):
     tmp["theta_step"] = 0.031416
     tmp["pos_step"] = 0.1
 
-    rng = random.randint(3,10)
+    rng = 0
+    if opponents == None:
+        rng = random.randint(3, 8)
+    else:
+        rng = random.randint(opponents, opponents)
 
     while len(tmp["opponents"]) < rng :
         x = random.uniform(tmp["field_limits"][0][0],tmp["field_limits"][0][1])

@@ -25,12 +25,16 @@ import random
 times = []
 
 greedy_args = SolverArgs()
+
 random_args = SolverArgs()
 random_args.compare_func = lambda x, y : x > y
 random_args.tries = 10000
 random_args.i_m = 100
 random_args.prob = 0.2
-random_args.timeout = 0.5
+random_args.timeout = 0.1
+
+brute_args = SolverArgs()
+brute_args.compare_func = lambda x, y: x > y
 
 def run(solver, graph, problem, args):
     start = time.time()
@@ -41,7 +45,7 @@ def run(solver, graph, problem, args):
         return None
 
     end = time.time()
-    print("Solution of size " + str(len(res)) + " for " + str(len(problem["opponents"])) + " opponents found in " + str(end - start))
+    # print("Solution of size " + str(len(res)) + " for " + str(len(problem["opponents"])) + " opponents found in " + str(end - start))
     return (end - start, len(res), len(problem["opponents"]))
 
 random_def = []
@@ -50,36 +54,54 @@ ratio_def = []
 random_time = []
 greedy_time = []
 
-for i in range(100) :
-    problem_generator('B')
+time_list = []
 
-    # Create the problem
-    problem = Problem(JSonDecoder.decode)
-    problem.decode("dumps/B_problem.json")
+for j in range(1, 9):
+    for i in range(100) :
+        # print("Step " + str(i))
+        problem_generator('B', j)
 
-    graph = Graph(problem)
-    graph.compute_adjacency_matrix()
+        # Create the problem
+        problem = Problem(JSonDecoder.decode)
+        problem.decode("dumps/B_problem.json")
 
-    r_solver = RandomSolver(graph)
-    g_solver = GreedySolver(graph)
+        start = time.time()
 
-    print("RANDOM: ", end="")
-    res1 = run(r_solver, graph, problem, random_args)
-    print("GREEDY: ", end="")
-    res2 = run(g_solver, graph, problem, greedy_args)
+        # res = solver.solve(args)
 
-    if res1 == None or res2 == None:
-        continue
+        graph = Graph(problem)
+        graph.compute_adjacency_matrix()
 
-    random_def.append(res1[1])
-    greedy_def.append(res2[1])
-    ratio_def.append(res1[1] / res2[1])
-    random_time.append(res1[0])
-    greedy_time.append(res2[0])
-    print("----------------------------------------")
+        end = time.time()
 
-print(sum(ratio_def)/len(ratio_def))
+        time_list.append(end - start)
 
-# print("Average time measured over 300 random problems using random solver")
-# print("number of opponent between 3 and 6")
-# print(sum(times)/len(times))
+        r_solver = RandomSolver(graph)
+        g_solver = GreedySolver(graph)
+        b_solver = BruteForceSolver(graph)
+
+        res1 = None
+        res2 = None
+
+        try:
+            res1 = run(r_solver, graph, problem, random_args)
+            res2 = run(g_solver, graph, problem, greedy_args)
+        except Exception as e:
+            continue
+
+        if res1 == None or res2 == None:
+            continue
+
+        random_def.append(res1[1])
+        greedy_def.append(res2[1])
+        ratio_def.append(res1[1] / res2[1])
+        random_time.append(res1[0])
+        greedy_time.append(res2[0])
+        # print("----------------------------------------")
+
+    print("")
+    print("Ratio: " + str(sum(ratio_def)/len(ratio_def)))
+    # print("Random: " + str(sum(random_time)/len(random_time)))
+
+    # print("Average time measured over 300 random problems using random solver")
+    # print("number of opponent between 3 and 6")
