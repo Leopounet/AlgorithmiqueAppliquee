@@ -117,13 +117,12 @@ class ConvexShape:
         t_p3 = triangle.points[1] - v * size
 
         # Vectors from the goal to the opponent
-        v1 = Vector.v_from_pp(triangle.points[1], triangle.points[0])
-        v2 = Vector.v_from_pp(triangle.points[2], triangle.points[0])
+        v1 = Vector.v_from_pp(t_p3, triangle.points[0])
+        v2 = Vector.v_from_pp(t_p2, triangle.points[0])
 
         # The resulting vector defines where the last point is w.r.t the old triangle
-        v = v1 + v2
-        v.normalize()
+        v = (v1 + v2).normalize()
 
-        t_p1 = triangle.points[0] + v * size
+        t_p1 = triangle.points[0] + 4 * v # * size
 
         return ConvexShape([t_p1, t_p2, t_p3])

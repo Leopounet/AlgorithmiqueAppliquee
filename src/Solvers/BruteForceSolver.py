@@ -5,18 +5,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from src.Solvers.Solver import Solver
 
 """
-This module is used to simulate graphs.
-Subject to a lot, lot of changes, yep.
+BruteForce solver for a given problem.
 """
 
 class BruteForceSolver(Solver):
 
     """
-    Graph encapsulates a broad definition of what is a graph. It is optimized to be used on this specific problem.
-    It has therefore a lot of flaws as an actual Graph class. 
-
-    If for some reason an other problem (other than dominant set) must be solved, maybe another class Graph will be
-    added.
+    BruteForce solver for a given problem.
     """
 
     def __init__(self, graph):
@@ -57,7 +52,7 @@ class BruteForceSolver(Solver):
         # we need to remove the last added defender, to add the next one)
         if size == 0:
             if dominated_set == self.graph.dominant_value:
-                return self.graph.index_list_to_defenders(defenders_list)
+                return defenders_list.copy()
             return None
 
         # If the team isn't full and there are defenders to add
@@ -79,16 +74,28 @@ class BruteForceSolver(Solver):
                     index += 1
                     continue
  
-                # Collision detection
+                # Collision detection (should be done an other way preferably
+                # for this is not so efficient)
                 if not self.graph.valid_defender(defenders_list, index):
                     index += 1
                     continue
 
+                # this is a check about the possibility of finding a solution with the current
+                # dominating set
+                #
+                # say you have a set of size a <= k where k is the maximum size allowed for the set
+                # if the total degree of the set is smaller than (k - a) * DELTA(G) then
+                # there are no possible solution (see solve method for more info)
+                #
+                # this could largely be enhanced by computing the new DELTA(G) after adding a defender
+                # which can lower over time (since we don't choose twice the same defender)
                 tmp_max_possible_deg = max_possible_deg + self.graph.deg[index]
-                if tmp_max_possible_deg + (size-1) * self.graph.max_deg_after[index] < self.graph.nb_shots:
+                if (index < len(self.graph.defenders) - 1 and
+                    tmp_max_possible_deg + (size-1) * self.graph.deg[index + 1] < self.graph.nb_shots):
                     index += 1
                     continue
 
+                # compute the dominating value of the current set
                 tmp_dominant_set = dominated_set | self.graph.edges[index]
 
                 # New defender added and solution checking
@@ -109,29 +116,48 @@ class BruteForceSolver(Solver):
         return None
 
     def solve(self, params):
-        if params.compare_func != None:
-            self.sort(params.compare_func)
-        self.construct_deg()
+        """
+        Tries to find a minimum dominating set for the given graph. If one is found,
+        it has to be a minimum one. This algorithm has an exponential complexity.
+
+        :param params: A SolverArgs object storing different values to modify the behavior of
+        the solving algorithm.
+
+        :return: a list of defender that is a dominating set, None otherwise.
+        """
+        
+        # sorts the list of defenders given a compare func
+        self.sort(params.compare_func)
 
         res = None
-        for i in range(1, len(self.graph.opponents) * 2):
-            # check before hand
+
+        # iterative search for a minimum dominating set
+        for i in range(1, len(self.graph.opponents) * 10):
+
+            # if a solution of this size is impossible, go to the next step
+            # here, if DELTA(G) * i < nb_shots then there are no solution
+            # it is quite easy to see, blocking n shots <=> delta(v) = n
+            # therefore blocking nb_shots shots requires to have a dominating set
+            # that a total degree at least nb_shots
             if self.graph.max_deg * i < self.graph.nb_shots:
                 continue
-
+            
+            # try to solve for this size of dominating set
             res = self.solve_(i, [], 0, 0, 0)
+
+            # if a valid result has been found, return it
             if res != None:
                 break
-        return res
-
-    def construct_deg(self):
-        # to do in a separate place pls
-        max_found = self.graph.deg[len(self.graph.deg) - 1]
-        for i in range(0, len(self.graph.deg)):
-            max_found = max(self.graph.deg[len(self.graph.deg) - i - 1], max_found)
-            self.graph.max_deg_after.append(max_found)
-        self.graph.max_deg_after = self.graph.max_deg_after[::-1]
+        return self.graph.index_list_to_defenders(res) if res != None else res
 
     def sort(self, compare_func):
+        """
+        Sorts the arrays defined below w.r.t the first array of the list.
+        The sort is a bubble sort for now, but the time it takes is low compared
+        to the time it takes the solver to solve the problem.
+
+        :param compare_func: The function used to sort the first array:
+        :return: nothing
+        """
         arrays = [self.graph.deg, self.graph.defenders, self.graph.edges]
         self.graph.bubble_sort(arrays, compare_func)

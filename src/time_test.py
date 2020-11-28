@@ -27,14 +27,14 @@ times = []
 greedy_args = SolverArgs()
 
 random_args = SolverArgs()
-random_args.compare_func = lambda x, y : x > y
+random_args.compare_func = lambda x, y : x < y
 random_args.tries = 10000
 random_args.i_m = 100
 random_args.prob = 0.2
 random_args.timeout = 0.1
 
 brute_args = SolverArgs()
-brute_args.compare_func = lambda x, y: x > y
+brute_args.compare_func = lambda x, y: x < y
 
 def run(solver, graph, problem, args):
     start = time.time()
@@ -45,18 +45,18 @@ def run(solver, graph, problem, args):
         return None
 
     end = time.time()
-    # print("Solution of size " + str(len(res)) + " for " + str(len(problem["opponents"])) + " opponents found in " + str(end - start))
+    print("Solution of size " + str(len(res)) + " for " + str(len(problem["opponents"])) + " opponents found in " + str(end - start))
     return (end - start, len(res), len(problem["opponents"]))
 
-random_def = []
-greedy_def = []
-ratio_def = []
-random_time = []
-greedy_time = []
-
-time_list = []
-
 for j in range(1, 9):
+    random_def = []
+    greedy_def = []
+    ratio_def = []
+    random_time = []
+    greedy_time = []
+
+    time_list = []
+
     for i in range(100) :
         # print("Step " + str(i))
         problem_generator('B', j)
@@ -70,7 +70,6 @@ for j in range(1, 9):
         # res = solver.solve(args)
 
         graph = Graph(problem)
-        graph.compute_adjacency_matrix()
 
         end = time.time()
 
@@ -84,23 +83,29 @@ for j in range(1, 9):
         res2 = None
 
         try:
-            res1 = run(r_solver, graph, problem, random_args)
+            # print("BRUTE:", end="")
+            # res1 = run(b_solver, graph, problem, brute_args)
+            print("GREEDY:", end="")
             res2 = run(g_solver, graph, problem, greedy_args)
+
+            # if res1[1] > res2[1]:
+            #     exit(0)
         except Exception as e:
             continue
 
-        if res1 == None or res2 == None:
+        if res2 == None: # or res2 == None:
             continue
 
-        random_def.append(res1[1])
-        greedy_def.append(res2[1])
-        ratio_def.append(res1[1] / res2[1])
-        random_time.append(res1[0])
+        # random_def.append(res1[1])
+        # greedy_def.append(res2[1])
+        # ratio_def.append(res1[1] / res2[1])
+        # random_time.append(res1[0])
         greedy_time.append(res2[0])
-        # print("----------------------------------------")
+        print("----------------------------------------")
 
     print("")
-    print("Ratio: " + str(sum(ratio_def)/len(ratio_def)))
+    print(sum(greedy_time)/len(greedy_time))
+    # print("Ratio: " + str(sum(ratio_def)/len(ratio_def)))
     # print("Random: " + str(sum(random_time)/len(random_time)))
 
     # print("Average time measured over 300 random problems using random solver")

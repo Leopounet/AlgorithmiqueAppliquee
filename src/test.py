@@ -36,7 +36,7 @@ greedy_args = SolverArgs()
 
 # args for the random solver (please do modify)
 random_args = SolverArgs()
-random_args.compare_func = lambda x, y : x > y
+random_args.compare_func = lambda x, y : x < y
 random_args.tries = 10000
 random_args.i_m = 100
 random_args.prob = 0.2
@@ -44,7 +44,7 @@ random_args.timeout = 0.1
 
 # args for the brute solver
 brute_args = SolverArgs()
-brute_args.compare_func = lambda x, y: x > y
+brute_args.compare_func = lambda x, y: x < y
 
 path = None
 res = None 
@@ -89,7 +89,6 @@ problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
 graph = Graph(problem)
-graph.compute_adjacency_matrix()
 
 s = solver(graph)
 res = s.solve(args)

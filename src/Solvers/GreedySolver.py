@@ -7,32 +7,52 @@ class GreedySolver:
         self.compensation = int((self.graph.dominant_value + 1) / 2)
         self.max_index = len(self.graph.edges) - 1
 
-    def remove_uncovered(self, index):
+    def remove_uncovered(self, index, def_list, edges):
         tmp_max_uncovered = 0
-        val1 = self.graph.edges[index]
+        val1 = edges[index]
         i = 0
-        while i < self.max_index:
-            self.graph.edges[i] = ((val1 ^ self.graph.edges[i]) + self.compensation) & self.graph.edges[i]
-            if self.graph.edges[i] == self.graph.dominant_value:
-                self.graph.edges[i] = self.graph.edges[self.max_index]
+        while i <= self.max_index:
+
+            edges[i] = ((val1 ^ edges[i]) + self.compensation) & edges[i]
+
+            if edges[i] == self.graph.dominant_value:
+                edges[i] = edges[self.max_index]
+                edges[self.max_index] = self.graph.dominant_value
                 self.max_index -= 1
-            count = bin(self.graph.edges[i]).count('1')
+                continue
+
+            count = bin(edges[i]).count('1')
+
             if count > self.max_current:
                 tmp_max_uncovered = i
                 self.max_current = count
+
             i += 1
+
         self.max_uncovered = tmp_max_uncovered
 
-    def _solve(self, dom_val, def_list, depth=0):
-        if dom_val == self.graph.dominant_value:
-            return def_list
+    def _solve(self, dom_val, def_list, edges, depth=0):
+        depth = 0
+        while depth < len(self.graph.defenders):
+            if dom_val == self.graph.dominant_value:
+                return def_list
 
-        def_list.append(self.max_uncovered)
-        dom_val = dom_val | self.graph.edges[self.max_uncovered]
-        self.max_current = 0
-        self.remove_uncovered(self.max_uncovered)
+            if not self.has_solution(edges, dom_val):
+                return None
 
-        return self._solve(dom_val, def_list, depth+1)
+            if not self.graph.valid_defender(def_list, self.max_uncovered):
+                edges[self.max_uncovered] = edges[self.max_index]
+                edges[self.max_index] = self.graph.dominant_value
+                self.max_index -= 1
+                depth += 1
+                continue
+
+            def_list.append(self.max_uncovered)
+            dom_val = dom_val | edges[self.max_uncovered]
+            self.max_current = 0
+            self.remove_uncovered(self.max_uncovered, def_list, edges)
+
+            depth += 1
 
     def sum_all(self, index, def_list, edges):
         s = 0
@@ -55,20 +75,22 @@ class GreedySolver:
                 changed = True
         return (new_list.copy(), changed)
 
-    def has_solution(self):
-        s = 0
-        for e in self.graph.edges:
+    def has_solution(self, edges, dom_val):
+        s = dom_val
+        for e in edges:
             s = s | e
         return s == self.graph.dominant_value
 
     def solve(self, params):
-        if not self.has_solution():
+        if not self.has_solution(self.graph.edges, 0):
             return None
         edges = self.graph.edges.copy()
-        res = self._solve(0, [])
+        res = self._solve(0, [], edges)
         changed = True
+        if res == None:
+            return res
         while changed:
-            res, changed = self.purge(res, edges)
+            res, changed = self.purge(res, self.graph.edges)
         return self.graph.index_list_to_defenders(res)
 
     def sort(self, compare_func):
