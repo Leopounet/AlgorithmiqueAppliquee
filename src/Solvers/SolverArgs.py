@@ -7,4 +7,3 @@ class SolverArgs:
         self.prob = None
         self.timeout = None
         self.perm = None
-        
