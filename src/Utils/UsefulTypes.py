@@ -9,14 +9,13 @@ import math
 
 """
 This module regroups a lot of class definition that are basic encapsulations
-of other concepts. Found here so far :
+of other concepts. Found here so far : 
 
-- Player (Abstract definition of Defender and Opponent)
-- Defender
-- Opponent
-- Shot
+- Player (Abstract definition of Defender and Opponent) 
+- Defender 
+- Opponent 
+- Shot 
 - Goal
-
 """
 
 class Player:
@@ -28,18 +27,20 @@ class Player:
 
     def __init__(self, pos, radius):
         """
-        Constructs a new 'Player' object.
+        Constructs a new 'Player' object. 
 
-        :param pos: The initial position of the player.
-        :param radius: The radius of the player.
-        :return: returns nothing.
+        :param pos: The initial position of the player. 
+
+        :param radius: The radius of the player. 
+
+        :return: returns nothing. 
         """
         self.pos = pos
         self.radius = radius
 
     def __str__(self):
         """
-        Allows the use of print(p) where p is a 'Player' object.
+        Allows the use of print(p) where p is a 'Player' object. 
 
         :return: The corresponding string.
         """
@@ -49,11 +50,13 @@ class Player:
     def collision(self, player, distance=None):
         """
         Checks if this player and the given one collide. It can also be used
-        to check if they are a certain distance apart with the optional parameter.
+        to check if they are a certain distance apart with the optional parameter. 
 
         :param player: The other player to check collisions with.
-        :param distance (opt): The distance to have between the two robots to not have 
-        a collision.
+
+        :param distance (opt): The distance to have between the two robots to not have \
+        a collision. 
+
         :return: True if there is a collision, False otherwise.
         """
         if distance == None:
@@ -63,10 +66,12 @@ class Player:
     def in_zone(self, bottom_left, top_right):
         """
         Checks if this player is in a rectangular zone defined by its bottom left point 
-        and top right point.
+        and top right point. 
 
-        :param bottom_left: The bottom left point of the zone.
-        :param top_right: The top right point of the zone.
+        :param bottom_left: The bottom left point of the zone. 
+
+        :param top_right: The top right point of the zone. 
+
         :return: True if the player is in the zone, False otherwise.
         """
         return (bottom_left.x <= self.pos.x and self.pos.x <= bottom_left.x and
@@ -82,10 +87,12 @@ class Defender(Player):
     
     def __init__(self, pos, radius):
         """
-        Constructs a new 'Defender' object.
+        Constructs a new 'Defender' object. 
 
-        :param pos: The initial position of the defender.
-        :param radius: The radius of the defender.
+        :param pos: The initial position of the defender. 
+
+        :param radius: The radius of the defender. 
+
         :return: returns nothing.
         """
         super().__init__(pos, radius)
@@ -93,10 +100,11 @@ class Defender(Player):
     def is_valid_pos(self, pos_step):
         """
         Check if the position of this player is valid regarding the given
-        step between two positions.
+        step between two positions. 
 
-        :param pos_step: The distance between two positions next to each other
-        in all four cardinal directions.
+        :param pos_step: The distance between two positions next to each other \
+        in all four cardinal directions. 
+
         :return: True if the position is valid, False otherwise.
         """
         return not (self.pos.x % pos_step or self.pos.y % pos_step)
@@ -110,10 +118,12 @@ class Opponent(Player):
     
     def __init__(self, pos, radius=0):
         """
-        Constructs a new 'Opponent' object.
+        Constructs a new 'Opponent' object. 
 
-        :param pos: The initial position of the opponent.
-        :param radius (opt): The radius of the opponent.
+        :param pos: The initial position of the opponent. 
+
+        :param radius (opt): The radius of the opponent. 
+
         :return: returns nothing.
         """
         super().__init__(pos, radius)
@@ -126,11 +136,13 @@ class Shot:
 
     def __init__(self, opponent, angle):
         """
-        Constructs a new 'Shot' object.
+        Constructs a new 'Shot' object. 
 
-        :param opponent: The opponent that is taking the shot.
+        :param opponent: The opponent that is taking the shot. 
+
         :param angle: The angle at which the opponent is shooting, with regard to the
-        origin of the field (in the center).
+        origin of the field (in the center). 
+
         :return: returns nothing.
         """
         self.opponent = opponent
@@ -138,7 +150,7 @@ class Shot:
 
     def __str__(self):
         """
-        Allows the use of print(s) where s is a 'Shot' object.
+        Allows the use of print(s) where s is a 'Shot' object. 
 
         :return: The corresponding string.
         """
@@ -148,9 +160,10 @@ class Shot:
     def is_valid_angle(self, theta_step):
         """
         Check if the angle of this shot is valid regarding the given
-        step between two angles.
+        step between two angles. 
 
-        :param theta_step: The angle between two consecutive angles.
+        :param theta_step: The angle between two consecutive angles. 
+
         :return: True if the angle is valid, False otherwise.
         """
         return not (self.angle % theta_step)
@@ -164,11 +177,14 @@ class Goal:
 
     def __init__(self, start_pos, end_pos, direction):
         """
-        Creates a new 'Goal' object.
+        Creates a new 'Goal' object. 
 
         :param start_pos: The starting point of the segment.
-        :param end_pos: The ending point of the segment.
-        :param direction: The orientation of the goal.
+
+        :param end_pos: The ending point of the segment. 
+
+        :param direction: The orientation of the goal. 
+
         :return: returns nothing.
         """
         self.s_pos = start_pos
@@ -177,7 +193,7 @@ class Goal:
 
     def __str__(self):
         """
-        Allows the use of print(g) where g is a 'Goal' object.
+        Allows the use of print(g) where g is a 'Goal' object. 
 
         :return: The corresponding string.
         """
@@ -186,15 +202,18 @@ class Goal:
 
     def is_in_interval(self, low, high, value):
         """
-        Check if the given value in in the interval [low ; high].
+        Check if the given value in in the interval [low ; high]. 
 
         Useful method to make the code easier to read. It is not specific
         to this class and could be used in different classes but for now
-        it will remain here.
+        it will remain here. 
 
-        :param low: Low bound of the interval.
-        :param high: High bound of the interval.
-        :param value: The value to check.
+        :param low: Low bound of the interval. 
+
+        :param high: High bound of the interval. 
+
+        :param value: The value to check. 
+
         :return: True if value is in the interval, false otherwise.
         """
         return low <= value and value <= high
@@ -208,9 +227,10 @@ class Goal:
         This is done by checking the angle formed between the direction vector of the goal and
         the vector going from the center of the goal to the player. This angle must be in
         [-pi/2 ; pi/2] if the player is correctly placed (draw it yourself or check out paper
-        about this problem for more information).
+        about this problem for more information). 
 
-        :param player: The player to consider.
+        :param player: The player to consider. 
+
         :return: True if the player is correctly placed, False otherwise.
         """
 
@@ -236,13 +256,14 @@ class Goal:
         simply consider that whether the shot is valid or not, for it to be
         going towards the goal, it needs to go towards the half-plane define by the goal's segment
         (well, goal's line in this case, it is considered infinite here). For more information,
-        check our paper on this subject or try drawing it yourself.
+        check our paper on this subject or try drawing it yourself. 
 
         To know if this is the case, the scalar product of the vector of the shot and the 
         direction of the goal is checked. There are supposed to be going in opposite direction,
-        therefore the scalar product must be negative.
+        therefore the scalar product must be negative. 
 
-        :param shot: The shot to consider.
+        :param shot: The shot to consider. 
+
         :return: True if the shot goes towards the goal (if it was infinite), False otherwise.
         """
         return Vector.v_from_a(shot.angle) * self.dir < 0
@@ -250,13 +271,14 @@ class Goal:
     def check_shot_on_target(self, shot):
         """
         Checks if the shot (abstracted to an infinite line) intersects the goal's
-        segment.
+        segment. 
 
         To do so,find the intersection point between the shot corresponding linear equation
         and the goal's segment corresponding linear equation. Then check if this point is
-        in the goal's segment.
+        in the goal's segment. 
         
-        :param shot: The shot to consider.
+        :param shot: The shot to consider. 
+
         :return: True if the shot intersects the goal's segment, False otherwise.
         """
         # Defining a few variables to ease the reading
@@ -334,18 +356,21 @@ class Goal:
     def is_shot_valid(self, shot):
         """
         Checks if a shot is valid (going in the goal) or not. To do so, three
-        things are checked :
+        things are checked : 
 
-        1 -> Is the player ABLE to shoot in the goal, namely is it in front of the goal and not behind?
-        2 -> Is the shot going towards the half plane defined by the goal?
-        3 -> Is the linear equation defined by the shot intersecting the goal's segment?
+        1 -> Is the player ABLE to shoot in the goal, namely is it in front of the goal and not behind? 
+
+        2 -> Is the shot going towards the half plane defined by the goal? 
+        
+        3 -> Is the linear equation defined by the shot intersecting the goal's segment? 
 
         (3) is obviously required. (2) is required because if it isn't checked, the player could shoot 
         away from the goal and it would be considered valid since in (3) we consider a linear equation 
         and not a half-line. (1) is required because otherwise it would be true even if the player 
-        shoots from behind the goal.
+        shoots from behind the goal. 
 
-        :param shot: The shot to check.
+        :param shot: The shot to check. 
+
         :return: True if the shot is valid, False otherwise.
         """
         a = self.check_position(shot.opponent)
@@ -355,14 +380,16 @@ class Goal:
 
     def shot_intercepted(self, defender, shot):
         """
-        Checks if the given shot is intercepted by the given player with regard to this goal.
+        Checks if the given shot is intercepted by the given player with regard to this goal. 
 
         To do so, we check if the circle defined by the player and its radius intersects the
         shot. Then, it is checked if the intersection is between the opponent and the goal. 
-        There are plenty of special cases, find more information below.
+        There are plenty of special cases, find more information below. 
 
-        :param defender: The defender that should intercept the shot.
-        :param shot: The shot to intercept.
+        :param defender: The defender that should intercept the shot. 
+
+        :param shot: The shot to intercept. 
+            
         :return: True if the shot is intercepted, False otherwise.
         """
 

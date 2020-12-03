@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
-from src.Problem.ProblemType import ProblemType
+from src.ProblemUtils.ProblemType import ProblemType
 from src.Utils.Point import Point
 from src.Utils.Vector import Vector
 from src.Utils.UsefulTypes import Goal, Opponent, Shot, Defender
@@ -16,10 +16,10 @@ Very simple module that converts a .json file into a dictionnary.
 
 def decode(file):
     """
-    This function creates a dictionnary out of a given file thanks to pre-existing json functions.
-
-    :param file: The file to decode.
-    :return: The corresponding Python dictionnary or None if something went wrong (i.e: the given file
+    This function creates a dictionnary out of a given file thanks to pre-existing json functions. 
+    
+    :param file: The file to decode. 
+    :return: The corresponding Python dictionnary or None if something went wrong (i.e: the given file \
     is invalid).
     """
     # Json to dictionnary

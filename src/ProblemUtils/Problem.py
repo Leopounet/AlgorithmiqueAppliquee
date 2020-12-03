@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
-from src.Problem.ProblemType import ProblemType
+from src.ProblemUtils.ProblemType import ProblemType
 
 """
 This module is used to store inputs of the problem in a standardized manner. 
@@ -13,17 +13,18 @@ Every possible variants of the problem could be simulated with this class.
 class Problem:
 
     """
-    Inputs encapsulates every possible set of inputs for the problem.
+    Problem encapsulates every possible set of inputs for the problem.
     """
     def __init__(self, decoding_function):
         """
-        Construct a new 'Inputs' object.
+        Construct a new 'Inputs' object. 
 
-        :param decoding_function: The function to use to decode the given file (should be different depending on its format).
-        To add a decoding function, create a decoding file in the Decoders directory. Add the decoding function you would like to
-        use and then pass this function as an argument when creating a Decoder object. 
+        :param decoding_function: The function to use to decode the given file (should be different depending 
+        on its format). To add a decoding function, create a decoding file in the Decoders directory. Add the 
+        decoding function you would like to use and then pass this function as an argument when creating a Decoder 
+        object. 
+        Note: All decoding function must take a file as an argument and return a dictionnary. 
 
-        Note: All decoding function must take a file as an argument and return a dictionnary.
         :return: returns nothing
         """
 
@@ -45,9 +46,10 @@ class Problem:
     def __getitem__(self, key):
         """
         Allows to type p[key] where p is a 'Problem' object and key is a valid key of 
-        the inputs dictionnary.
+        the inputs dictionnary. 
 
-        :param key: A valid key in inputs.
+        :param key: A valid key in inputs. 
+
         :return: The corresponding value to key in inputs, if the key is not valid, returns None.
         """
         if key not in self.inputs:
@@ -56,7 +58,7 @@ class Problem:
 
     def __str__(self):
         """
-        Allows the use of print(p) where p is a 'Problem' object.
+        Allows the use of print(p) where p is a 'Problem' object. 
 
         :return: The corresponding string.
         """
@@ -74,19 +76,20 @@ class Problem:
                         res += spaces
                     first = False
                     res += str(e) + " "
-                    res += "\n"
+                    res += "n"
             else:
                 res += i + ": " + str(self.inputs[i])
-            res += "\n"
+            res += "n"
         res = res[:-1]
         return res
 
     def decode(self, file):
         """
         Decodes the given file and stores its result in the corresponding member. 
-        It deletes any previously stored result.
+        It deletes any previously stored result. 
 
-        :param file: The file to decode (currently supported: JSon)
+        :param file: The file to decode (currently supported: JSon) 
+
         :return: Returns the resulting 'Input' object (or None if something went wrong)
         """
         res = self.decoding_function(file)
@@ -97,10 +100,12 @@ class Problem:
     def add_input(self, key, value=None):
         """
         Adds a new valid key to the inputs dictionnary.
-        If the key is already in the dictionnary, the previous value is replaced with the new given value.
+        If the key is already in the dictionnary, the previous value is replaced with the new given value. 
 
-        :param key: The new key to add.
-        :param value: The default value assigned to the key (default: None)
+        :param key: The new key to add. 
+
+        :param value: The default value assigned to the key (default: None) 
+
         :return: returns nothing
         """
         self.inputs[key] = value
@@ -108,9 +113,11 @@ class Problem:
     def get_input_from_key(self, key):
         """
         Finds an element in the inputs dictionnary using the given key.
-        Should we throw an error if something goes horribly wrong? (the key is not valid) or return None? Might be confusing?
+        Should we throw an error if something goes horribly wrong? (the key is not valid) or return None? 
+        Might be confusing? 
 
-        :param key: The key of the element to get
+        :param key: The key of the element to get 
+
         :return: The corresponding element if the key is valid, something else or an error otherwise
         """
         if key in self.inputs:
@@ -119,7 +126,7 @@ class Problem:
 
     def get_key_list(self):
         """
-        Returns all the available keys in the dictionnary.
+        Returns all the available keys in the dictionnary. 
 
         :return: All the available keys in the dictionnary.
         """

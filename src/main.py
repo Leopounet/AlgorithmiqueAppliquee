@@ -7,8 +7,8 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import src.Decoders.JSonDecoder as JSonDecoder
-from src.Problem.Problem import Problem
-from src.Problem.ProblemType import ProblemType
+from src.ProblemUtils.Problem import Problem
+from src.ProblemUtils.ProblemType import ProblemType
 from src.Utils.Graph import Graph
 from src.Solvers.RandomSolver import RandomSolver
 from src.Solvers.BruteForceSolver import BruteForceSolver
@@ -90,10 +90,12 @@ problem.decode(path)
 
 graph = Graph(problem)
 
-# print(graph)
-
 s = solver(graph)
 res = s.solve(args)
+
+if res == None:
+    print("No solution found with this solver.")
+    exit(2)
 
 # Fetch the results
 JSonDecoder.save_json(res, "data.json")

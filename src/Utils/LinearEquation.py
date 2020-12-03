@@ -13,21 +13,22 @@ class LinearEquation:
 
     """
     This class simulates a linear a equation of the form ax + b. It then gives access
-    to plenty of useful method on linear equations.
-
-    :member n_digits_round: The max number of digits after the decimal point (then
-    rounded if exceeded). Useful because of approximation problems linked to Python and
-    computers in general.
+    to plenty of useful method on linear equations. 
     """
 
+    # The max number of digits after the decimal point (then
+    # rounded if exceeded). Useful because of approximation problems linked to Python and
+    # computers in general.
     n_digits_round = 15
 
     def __init__(self, a=0, b=0):
         """
-        Constructs a new "LinearEquation" object.
+        Constructs a new "LinearEquation" object. 
 
-        :param a: The coefficient of the LE.
-        :param b: The added constant of the LE.
+        :param a: The coefficient of the LE. 
+
+        :param b: The added constant of the LE. 
+
         :return: returns nothing.
         """
         self.a = round(a, self.n_digits_round)
@@ -35,7 +36,7 @@ class LinearEquation:
 
     def __str__(self):
         """
-        Method to be able to use print(linear_eq).
+        Method to be able to use print(linear_eq). 
 
         :return: Returns the corresponding string.
         """
@@ -43,9 +44,10 @@ class LinearEquation:
 
     def apply(self, x):
         """
-        Let f be this linear equation, return f(x).
+        Let f be this linear equation, return f(x). 
 
-        :param x: The abscissa of the point.
+        :param x: The abscissa of the point. 
+
         :return: f(x) if defined, raises an exception otherwise.
         """
         try:
@@ -56,9 +58,10 @@ class LinearEquation:
 
     def reverse(self, y):
         """
-        lef f be this linear equation, return f-1(y).
+        Lef f be this linear equation, return f-1(y). 
 
-        :param y: The ordinate of the point.
+        :param y: The ordinate of the point. 
+
         :return: f-1(y) if defined, raises an exception otherwise.
         """
         try:
@@ -69,9 +72,10 @@ class LinearEquation:
 
     def is_point_on(self, point):
         """
-        Checks if a point is on this linear equation.
+        Checks if a point is on this linear equation. 
 
-        :param point: The point to test.
+        :param point: The point to test. 
+
         :return: True if the point is on the LE, False otherwise.
         """
         if self.apply(point.x) == point.y:
@@ -81,9 +85,10 @@ class LinearEquation:
     def intersection(self, other):
         """
         Checks if there exists an intersection point between this LE and the given one.
-        Formula: ax + b = a'x+ b' <=> x = (b' - b) / (a - a')
+        Formula: ax + b = a'x+ b' <=> x = (b' - b) / (a - a') 
 
-        :param other: The second LE to use.
+        :param other: The second LE to use. 
+
         :return: return the intersection point if it exists, if it doesn't, returns None.
         """
         if self.a == other.a:
@@ -98,15 +103,19 @@ class LinearEquation:
         Checks whether a LE, defined by a point and an angle intersect a circle of origin 
         'origin' and radius 'radius'.
         To do so it checks whether the projection of the origin on the LE is at a distance
-        smaller than the radius of the origin.
+        smaller than the radius of the origin. 
 
         There are a lot of exceptions here to take into account, see specific comments for 
-        detailed explanations.
+        detailed explanations. 
 
-        :param p: The point defining the LE.
-        :param angle: The angle defining the LE.
-        :param origin: The origin of the circle.
-        :param radius: The radius of the circle.
+        :param p: The point defining the LE. 
+            
+        :param angle: The angle defining the LE. 
+
+        :param origin: The origin of the circle. 
+
+        :param radius: The radius of the circle. 
+
         :return: the intersection point if it exists, None otherwise.
         """
 
@@ -151,10 +160,12 @@ class LinearEquation:
     @classmethod
     def create_le_from_pa(self, point, angle):
         """
-        Creates a new 'LinearEquation' object from a point and an angle.
+        Creates a new 'LinearEquation' object from a point and an angle. 
 
-        :param point: A point that the line goes through.
-        :param angle: The angle of the line w.r.t the origin.
+        :param point: A point that the line goes through. 
+
+        :param angle: The angle of the line w.r.t the origin. 
+
         :return: The newly created 'LinearEquation' object.
         """
         if abs(angle) == math.pi / 2:
@@ -166,10 +177,12 @@ class LinearEquation:
     @classmethod
     def create_le_from_pp(self, p1, p2):
         """
-        Creates a new 'LinearEquation' object from two points.
+        Creates a new 'LinearEquation' object from two points. 
 
-        :param point: A point that the line goes through.
-        :param point: Another point that the line goes through.
+        :param point: A point that the line goes through. 
+
+        :param point: Another point that the line goes through. 
+            
         :return: The newly created 'LinearEquation' object.
         """
         if p1.x == p2.x:

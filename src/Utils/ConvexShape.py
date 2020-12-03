@@ -20,16 +20,17 @@ class ConvexShape:
     def __init__(self, points):
         """
         Constructs a new 'ConvexShape'. It is considered that two consecutive points in the given
-        set of points do form a side of the polygon.
+        set of points do form a side of the polygon. 
 
-        :param points: The ste of points defining the polygon.
+        :param points: The ste of points defining the polygon. 
+
         :return: returns nothing.        
         """
         self.points = points
 
     def __str__(self):
         """
-        Allows the use of print(cs) where cs is a 'ConvexShape' object.
+        Allows the use of print(cs) where cs is a 'ConvexShape' object. 
 
         :return: The correspoding string.
         """
@@ -42,9 +43,10 @@ class ConvexShape:
     # # https://stackoverflow.com/questions/1119627/how-to-test-if-a-point-is-inside-of-a-convex-polygon-in-2d-integer-coordinates
     def point_in(self, point):
         """
-        Detects if the given point is inside this polygon.
+        Detects if the given point is inside this polygon. 
 
-        :param point: The point to check.
+        :param point: The point to check. 
+
         :return: True if the point is in the polygon, False otherwise.
         """
         prev_side = 0
@@ -79,10 +81,12 @@ class ConvexShape:
         Computes a triangle representing a set of shots. It constructed using
         an opponent and a goal. It draws a triangle going from the center of the opponent
         to the edges of the goal. All valid shots going towards this goal are guaranteed to 
-        be in this triangle.
+        be in this triangle. 
 
-        :param opponent: The opponent to consider.
-        :param goal: The goal to consider.
+        :param opponent: The opponent to consider. 
+
+        :param goal: The goal to consider. 
+
         :return: A new 'ConvexShape' that is a triangle with the opponent position first.
         """
         points = []
@@ -95,14 +99,16 @@ class ConvexShape:
     def compute_bigger_triangle(self, triangle, size):
         """
         Computes a new (bigger in theory) triangle, given a first one. This method's name
-        isn't great because it considers that the triangle represents a set of shots (cf above).
+        isn't great because it considers that the triangle represents a set of shots (cf above). 
 
         It is used to consider every point that are at most at distance 'size' from the given triangle.
         That being said, it doesn't extend the triangle behind the goal because no shot is going there
-        so this would be pointless.
+        so this would be pointless. 
 
-        :param triangle: The triangle to biggen.
-        :param size: The distance between the two triangles (radius of a robot basically).
+        :param triangle: The triangle to biggen. 
+
+        :param size: The distance between the two triangles (radius of a robot basically). 
+            
         :return: The newly created triangle.
         """
 

@@ -6,7 +6,7 @@ if [[ ! ($# -le 1) ]]; then
         cd ../src/
     fi
 else
-    echo "Usage: python3 test.py <file> <solveur>"
+    echo "Usage: ./solve.sh <file> <solveur>"
     echo "file: chemin vers le problème à résoudre"
     echo "solveur: le solveur à utiliser greedy|random|brute"
 fi

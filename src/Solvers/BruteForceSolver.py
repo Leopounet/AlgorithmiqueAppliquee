@@ -19,35 +19,35 @@ class BruteForceSolver(Solver):
 
     def solve_(self, size, defenders_list=[], index=0, dominant_value=0, max_possible_deg=0):
         """
-        Solves the problem recursively. It is a brute force algorithm with slight improvements.
-        
-        - If there is a collision with the current defender and a selected one, skip
-        - If a solution is found, stop looking for new solutions
-        - Ideas?
+        Solves the problem recursively. It is a brute force algorithm with slight improvements. 
 
-        It basically checks if every subset of the set of defender of size 'size' is a dominant
-        set of the shot set.
+        - If there is a collision with the current defender and a selected one, skip 
+        - If a solution is found, stop looking for new solutions 
+        - Ideas? 
 
-        :param size: The size of the subset to find (faster, especially if you have an intuition or
-        are looking for a specific kind of solution).
-        
-        :param defenders_list: The list of defenders that are selected at any given point. To be more
-        specific it a list of indexes in the defenders set (faster). This list is empty by default so that 
-        the initial call to the function is easy. This list could already contain elements if a solution
-        with a (or multiple) specific defender is required.
+        It basically checks if every subset of the set of defender of size 'size' is a dominant 
+        set of the shot set. 
 
-        :param index: The index of the current defender we are checking.
+        :param size: The size of the subset to find (faster, especially if you have an intuition or \
+        are looking for a specific kind of solution). 
 
-        :param dominant_value: This value corresponds to the current domination value of the current defender
-        set. This value is equal to the dominant value of the given graph once a solution is found. Find more
-        information in Utils/Graph.py.
+        :param defenders_list: The list of defenders that are selected at any given point. To be more \
+        specific it a list of indexes in the defenders set (faster). This list is empty by default so that \
+        the initial call to the function is easy. This list could already contain elements if a solution \
+        with a (or multiple) specific defender is required. 
 
-        :param max_possible_deg: The maximum possible total degree of all the selected nodes w.r.t the maximum
-        size of the set. For example, if the set of defender is [10, 16, 25] and the maximum size of the set
-        is n, then this variable will be equal to: 
-        deg(def10) + deg(def16) + def(def25) + (n - 3) * max_deg(graph)
+        :param index: The index of the current defender we are checking. 
 
-        :return: None if there isn't any solution, the list of indexes otherwise.
+        :param dominant_value: This value corresponds to the current domination value of the current defender \
+        set. This value is equal to the dominant value of the given graph once a solution is found. Find more \
+        information in Utils/Graph.py. 
+
+        :param max_possible_deg: The maximum possible total degree of all the selected nodes w.r.t the maximum \
+        size of the set. For example, if the set of defender is [10, 16, 25] and the maximum size of the set \
+        is n, then this variable will be equal to: \
+        deg(def10) + deg(def16) + def(def25) + (n - 3) * max_deg(graph) 
+
+        :return: None if there isn't any solution, the list of indexes otherwise. 
         """
 
         # If there isn't any more defender to add and the size of the team is still
@@ -127,10 +127,10 @@ class BruteForceSolver(Solver):
     def solve(self, params):
         """
         Tries to find a minimum dominating set for the given graph. If one is found,
-        it has to be a minimum one. This algorithm has an exponential complexity.
+        it has to be a minimum one. This algorithm has an exponential complexity. 
 
-        :param params: A SolverArgs object storing different values to modify the behavior of
-        the solving algorithm.
+        :param params: A SolverArgs object storing different values to modify the behavior of \
+        the solving algorithm. 
 
         :return: a list of defender that is a dominating set, None otherwise.
         """
@@ -163,9 +163,10 @@ class BruteForceSolver(Solver):
         """
         Sorts the arrays defined below w.r.t the first array of the list.
         The sort is a bubble sort for now, but the time it takes is low compared
-        to the time it takes the solver to solve the problem.
+        to the time it takes the solver to solve the problem. 
 
-        :param compare_func: The function used to sort the first array:
+        :param compare_func: The function used to sort the first array 
+            
         :return: nothing
         """
         arrays = [self.graph.deg, self.graph.defenders, self.graph.edges]

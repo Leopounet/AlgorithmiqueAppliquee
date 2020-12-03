@@ -5,17 +5,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 import math
 import json
 import random
-from src.Problem.ProblemType import ProblemType
+from src.ProblemUtils.ProblemType import ProblemType
 from src.Utils.Vector import Vector
 
 
 def problem_generator(pb_type, name="auto_generated", opponents=None):
     """
     This function saves a random problem as json file. The saved file 
-    will be located in src/dumps/.
+    will be located in src/dumps/. 
 
-    :param type: The type of problem, 'B' for Basic problem, 'MD' for Minimum Distance, 
-    'IP' for Initial Positions, 'GK' for Goal Keeper, 'MG' for MultiGoal (default: 'B').
+    :param type: The type of problem, 'B' for Basic problem, 'MD' for Minimum Distance, \
+    'IP' for Initial Positions, 'GK' for Goal Keeper, 'MG' for MultiGoal (default: 'B'). 
 
     :return: returns nothing.
     """

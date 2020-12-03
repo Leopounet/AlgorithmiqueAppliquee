@@ -21,14 +21,14 @@ class GreedySolver(Solver):
         Creates a new GreedySolver object. Note that this solver never branches
         (it has a single recursive call, see method solve) therefore storing data
         globally for each individual object, instead of giving them as arguments of 
-        the solve method when called recursively, is fine.
+        the solve method when called recursively, is fine. 
 
-        :param graph: The graph that is going to be used to solve the problem.
+        :param graph: The graph that is going to be used to solve the problem. 
         
         :param max_uncovered: The index of the node with the greatest degree that has not 
-        yet been added to the list of defenders.
+        yet been added to the list of defenders. 
 
-        :param 
+
         """
         super().__init__(graph)
         self.max_uncovered = graph.max_deg_index
@@ -64,7 +64,6 @@ class GreedySolver(Solver):
         depth = 0
         while depth < len(self.graph.defenders):
             if dom_val == self.graph.dominant_value:
-                print("k")
                 return def_list
 
             if not self.has_solution(edges, dom_val):
