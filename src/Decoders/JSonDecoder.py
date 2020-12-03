@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
-from src.ProblemType import ProblemType
+from src.Problem.ProblemType import ProblemType
 from src.Utils.Point import Point
 from src.Utils.Vector import Vector
 from src.Utils.UsefulTypes import Goal, Opponent, Shot, Defender

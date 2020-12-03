@@ -30,7 +30,7 @@ class GreedySolver(Solver):
 
         :param 
         """
-        super.__init__(graph)
+        super().__init__(graph)
         self.max_uncovered = graph.max_deg_index
         self.max_current = 0
         self.compensation = int((self.graph.dominant_value + 1) / 2)

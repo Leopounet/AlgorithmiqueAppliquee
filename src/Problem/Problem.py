@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import math
-from src.ProblemType import ProblemType
+from src.Problem.ProblemType import ProblemType
 
 """
 This module is used to store inputs of the problem in a standardized manner. 

@@ -7,7 +7,7 @@ from src.Utils.Vector import Vector
 from src.Utils.Point import Point
 from src.Utils.ConvexShape import ConvexShape
 from src.Utils.UsefulTypes import Opponent, Shot, Defender
-from src.ProblemType import ProblemType
+from src.Problem.ProblemType import ProblemType
 import random
 import time
 

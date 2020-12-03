@@ -7,8 +7,8 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 import src.Decoders.JSonDecoder as JSonDecoder
-from src.Problem import Problem
-from src.ProblemType import ProblemType
+from src.Problem.Problem import Problem
+from src.Problem.ProblemType import ProblemType
 from src.Utils.Graph import Graph
 from src.Solvers.RandomSolver import RandomSolver
 from src.Solvers.BruteForceSolver import BruteForceSolver
