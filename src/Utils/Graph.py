@@ -21,32 +21,35 @@ class Graph:
     """
     This class represents a graph.
 
-    :ivar defenders: This is a list of all the Defender objects that can be placed on the field (at first). \
-    These are one of the two parts of our vertices. 
+    :ivar defenders: This is a list of all the Defender objects that can be placed on 
+    the field (at first). These are one of the two parts of our vertices. \
 
-    :ivar opponents: A list of all the opponents on the field. This isn't used in the Graph per se, but it \
-    is important for efficiency reasons (see exists_collision). 
+    :ivar opponents: A list of all the opponents on the field. This isn't used in the 
+    Graph per se, but it is important for efficiency reasons (see exists_collision). \
 
-    :ivar shots: This is a list of all the possible shots (whether are not they are aimed at a goal). This is the \
-    second part of our vertices. 
+    :ivar shots: This is a list of all the possible shots (whether are not they are aimed at a 
+    goal). This is the second part of our vertices. \
 
-    :ivar edges: This a specific representation of edges. This a list of numbers where there binary representation \
-    represents the graph's matrix. 
+    :ivar edges: This a specific representation of edges. This a list of numbers where there \
+    binary representation represents the graph's matrix. 
 
     For example, if G has 3 vertices you can expect:
-    101
-    010
-    100
-    This is looking exactly like a normal matrix. Except that actually extracting an edge out of this representation
-    is not efficient. That being said, it is an interesting representation because it allows us to quickly check
-    if a set of vertices cover the whole graph. 
 
-    Back on the example, if I choose v1 and v3, and compute 101 | 100 (fast on computers), I get 101. Therefore those
-    two vertices do NOT represent a dominant set. On the other hand, if I choose v1 and v2, I get 101 | 010, which 
-    gives as a result 111, therefore v1 and v2 is a dominant set of G. 
+    | 1101
+    | 1010
+    | 1100
 
-    :ivar dominant_value: This is the expected value if the disjunction of the binary representations of the selected \
-    vertices is a dominant set. 
+    This is looking exactly like a normal matrix. Except that actually extracting an edge out of 
+    this representation is not efficient. That being said, it is an interesting representation 
+    because it allows us to quickly check if a set of vertices cover the whole graph. 
+
+    Back on the example, choose v1 and v3, and compute 1101 | 1100 (fast on computers), 
+    it returns 1101. Therefore those two vertices do NOT represent a dominant set. On the other 
+    hand, choose v1 and v2, 1101 | 1010 gives as a result 1111, therefore v1 
+    and v2 is a dominant set of G. 
+
+    :ivar dominant_value: This is the expected value if the disjunction of the binary representations 
+    of the selected vertices is a dominant set. \
     """
 
     def __init__(self, problem):
@@ -432,6 +435,18 @@ class Graph:
                         self.swap(arr, j, j+1)
 
     def index_list_to_defenders(self, indices):
+        """
+        Transforms a list of defenders indices into a list of defenders.
+
+        :param indices: The indices representing defenders.
+
+        :return: The corresponding list of defenders.
+        """
+
+        # security check
+        if indices == None:
+            return None
+
         res = []
         for i in indices:
             res.append(self.defenders[i])

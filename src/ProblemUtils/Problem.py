@@ -32,7 +32,8 @@ class Problem:
         self.decoding_function = decoding_function
 
         # Dictionnary used to store all types of inputs
-        # The reason why a dict. is used here is that it can be easily modified between two different instances of the
+        # The reason why a dict. is used here is that it can be easily modified between two different 
+        # instances of the
         # problem (even if they have different inputs set)
         #
         # Either: delete every unused key when possible

@@ -18,7 +18,9 @@ class SolverArgs:
         """
         self.compare_func = None
         self.random_tries = None
-        self.random_i_m = None
-        self.prob = None
-        self.timeout = None
-        self.perm = None
+        self.random_pgr = None
+        self.random_i_max = None
+        self.random_i_best = None
+        self.random_prob = None
+        self.random_timeout = None
+        self.random_perm = None

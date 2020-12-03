@@ -37,10 +37,12 @@ greedy_args = SolverArgs()
 # args for the random solver (please do modify)
 random_args = SolverArgs()
 random_args.compare_func = lambda x, y : x < y
-random_args.tries = 10000
-random_args.i_m = 100
-random_args.prob = 0.2
-random_args.timeout = 0.1
+random_args.random_tries = 10000
+random_args.random_pgr = 0.4
+random_args.random_i_max = 1000
+random_args.random_i_best = 4000
+random_args.random_prob = 0.2
+random_args.random_timeout = 0.5
 
 # args for the brute solver
 brute_args = SolverArgs()
