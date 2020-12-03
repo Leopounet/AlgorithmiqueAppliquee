@@ -6,8 +6,8 @@ __pycache__/
 **/dumps/
 **/test.py
 **/*.json
-doc/
 **/tests
+docs/source/*.rst
 
 # C extensions
 *.so
