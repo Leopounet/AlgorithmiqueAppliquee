@@ -64,6 +64,7 @@ class GreedySolver(Solver):
         depth = 0
         while depth < len(self.graph.defenders):
             if dom_val == self.graph.dominant_value:
+                print("k")
                 return def_list
 
             if not self.has_solution(edges, dom_val):

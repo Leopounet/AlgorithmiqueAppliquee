@@ -90,6 +90,8 @@ problem.decode(path)
 
 graph = Graph(problem)
 
+# print(graph)
+
 s = solver(graph)
 res = s.solve(args)
 
