@@ -6,6 +6,7 @@ __pycache__/
 **/dumps/
 **/main.py
 **/data.json
+doc/
 
 # C extensions
 *.so

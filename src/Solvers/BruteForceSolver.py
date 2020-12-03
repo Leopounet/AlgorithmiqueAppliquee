@@ -17,7 +17,7 @@ class BruteForceSolver(Solver):
     def __init__(self, graph):
         super().__init__(graph)
 
-    def solve_(self, size, defenders_list=[], index=0, dominated_set=0, max_possible_deg=0):
+    def solve_(self, size, defenders_list=[], index=0, dominant_value=0, max_possible_deg=0):
         """
         Solves the problem recursively. It is a brute force algorithm with slight improvements.
         
@@ -38,6 +38,15 @@ class BruteForceSolver(Solver):
 
         :param index: The index of the current defender we are checking.
 
+        :param dominant_value: This value corresponds to the current domination value of the current defender
+        set. This value is equal to the dominant value of the given graph once a solution is found. Find more
+        information in Utils/Graph.py.
+
+        :param max_possible_deg: The maximum possible total degree of all the selected nodes w.r.t the maximum
+        size of the set. For example, if the set of defender is [10, 16, 25] and the maximum size of the set
+        is n, then this variable will be equal to: 
+        deg(def10) + deg(def16) + def(def25) + (n - 3) * max_deg(graph)
+
         :return: None if there isn't any solution, the list of indexes otherwise.
         """
 
@@ -51,7 +60,7 @@ class BruteForceSolver(Solver):
         # return the list, otherwise return None (not going further because
         # we need to remove the last added defender, to add the next one)
         if size == 0:
-            if dominated_set == self.graph.dominant_value:
+            if dominant_value == self.graph.dominant_value:
                 return defenders_list.copy()
             return None
 
@@ -70,7 +79,7 @@ class BruteForceSolver(Solver):
             # 5 -> remove the current defender and go to the next one
             while index < len(self.graph.defenders):
 
-                if (dominated_set | self.graph.edges[index]) == dominated_set:
+                if (dominant_value | self.graph.edges[index]) == dominant_value:
                     index += 1
                     continue
  
@@ -96,12 +105,12 @@ class BruteForceSolver(Solver):
                     continue
 
                 # compute the dominating value of the current set
-                tmp_dominant_set = dominated_set | self.graph.edges[index]
+                tmp_dominant_value = dominant_value | self.graph.edges[index]
 
                 # New defender added and solution checking
                 defenders_list.append(index)
                    
-                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_set, tmp_max_possible_deg)
+                res = self.solve_(size-1, defenders_list, index+1, tmp_dominant_value, tmp_max_possible_deg)
 
                 # Remove current defender and go to the next one
                 del defenders_list[-1]

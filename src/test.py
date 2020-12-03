@@ -66,8 +66,8 @@ def str_to_solver(string):
 
 def usage():
     print("Usage: python3 test.py <file> <solveur>")
-    print("file: chemin vers le problème à résoudre")
-    print("solveur: le solveur à utiliser greedy|random|brute")
+    print("file: chemin vers le probleme a resoudre")
+    print("solveur: le solveur a utiliser greedy|random|brute")
 
 ##################################################################################
 ################################# MAIN ###########################################

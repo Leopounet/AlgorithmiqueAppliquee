@@ -1,7 +1,36 @@
-class GreedySolver:
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
+from src.Solvers.Solver import Solver
+
+
+"""
+Greedy solver for a given problem.
+"""
+
+class GreedySolver(Solver):
+
+    """
+    Greedy solver for a given problem.
+    """
+
 
     def __init__(self, graph):
-        self.graph = graph
+        """
+        Creates a new GreedySolver object. Note that this solver never branches
+        (it has a single recursive call, see method solve) therefore storing data
+        globally for each individual object, instead of giving them as arguments of 
+        the solve method when called recursively, is fine.
+
+        :param graph: The graph that is going to be used to solve the problem.
+        
+        :param max_uncovered: The index of the node with the greatest degree that has not 
+        yet been added to the list of defenders.
+
+        :param 
+        """
+        super.__init__(graph)
         self.max_uncovered = graph.max_deg_index
         self.max_current = 0
         self.compensation = int((self.graph.dominant_value + 1) / 2)

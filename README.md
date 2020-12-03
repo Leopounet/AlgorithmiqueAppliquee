@@ -7,7 +7,13 @@ du code final.
 
 # Utilisation
 
-Toutes ces commandes sont à exécuter dans le répertoire src.
+## Doc
+
+Pour générer la doc, il faut se placer à la racine du projet et utiliser la commande:
+
+`make doc`
+
+La documentation générée sera placée dans le dossier doc/.
 
 ## Basique
 
@@ -17,6 +23,8 @@ Pour le tester:
 
 où file est l'emplacement d'un problème à résoudre
 et solveur le solveur à utiliser (greedy, random ou brute).
+
+Le résultat du programme sera stocké dans src/data.json par défaut.
 
 ## Avec le visualiseur (Linux seulement)
 
