@@ -4,9 +4,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 **/dumps/
-**/main.py
+**/test.py
 **/data.json
 doc/
+**/tests
 
 # C extensions
 *.so
