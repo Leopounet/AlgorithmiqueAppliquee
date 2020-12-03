@@ -5,9 +5,21 @@ Projet d'algorithmique appliquée du M2 informatique fondamentale de Bordeaux pr
 Le code n'est pas fini (notamment il n'est pas commenté par endroit). Ce n'est qu'une version préliminaire
 du code final.
 
+# Dépendances
+
+## Documentation
+
+Installer sphinx:
+
+`pip install Sphinx`
+
+Insaller le thème utilisé:
+
+`pip install sphinx_rtd_theme`
+
 # Utilisation
 
-## Doc
+## Documentation
 
 Pour générer la doc, il faut se placer à la racine du projet et utiliser la commande:
 
@@ -30,15 +42,15 @@ Le résultat du programme sera stocké dans src/data.json par défaut.
 
 Autoriser l'utilisation du script:
 
-`chmod +x run.sh`
+`chmod +x solve.sh`
 
 Lancer le solveur sur un problème donné, puis ouvrir le visualiseur:
 
-`./run.sh <file> <solveur>`
+`./solve.sh <file> <solveur>`
 
 ## Le solveur random
 
-Les paramètres du solveur random peuvent être modifiés dans le fichier `test.py` (dans la partie variable). Les autres
+Les paramètres du solveur random peuvent être modifiés dans le fichier `main.py` (dans la partie variable). Les autres
 solveurs n'ont pas de paramètres intéressants à modifier.
 
 # Remerciement
