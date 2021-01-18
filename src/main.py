@@ -70,7 +70,7 @@ def str_to_solver(string):
     return (UNKNOWN, None)
 
 def usage():
-    print("Usage: python3 test.py <file> <solveur>")
+    print("Usage: python3 main.py <file> <solveur>")
     print("file: chemin vers le probleme a resoudre")
     print("solveur: le solveur a utiliser greedy|random|brute")
 
