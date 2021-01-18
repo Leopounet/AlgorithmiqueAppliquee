@@ -16,19 +16,30 @@ basic_keys_set = {
 goal_keeper_keys_set = basic_keys_set.copy()
 goal_keeper_keys_set.add("goalkeeper_area")
 
+# adding junk because otherwise in the enumeration, the values are the same
+# although this actually wouldn't change anything (multigoal
+# and basic problems are litterally treated the same way)
+multi_goal_keys_set = basic_keys_set.copy()
+multi_goal_keys_set.add("junk")
+
 initial_pos_keys_set = basic_keys_set.copy()
 initial_pos_keys_set.add("defenders")
 
 min_dist_keys_set = basic_keys_set.copy()
 min_dist_keys_set.add("min_dist")
 
+max_speed_keys_set = basic_keys_set.copy()
+max_speed_keys_set.add("ball_max_speed")
+max_speed_keys_set.add("robot_max_speed")
+
 class ProblemType(Enum):
     BASIC = basic_keys_set
     MIN_DIST = {}
     GOAL_KEEPER = goal_keeper_keys_set
-    MULTI_GOAL = basic_keys_set
+    MULTI_GOAL = multi_goal_keys_set
     INITIAL_POS = initial_pos_keys_set
     CURVED_TRAJECTORIES = min_dist_keys_set
+    MAX_SPEED = max_speed_keys_set
     UNDEFINED = {}
 
     @classmethod
@@ -68,5 +79,9 @@ class ProblemType(Enum):
         # Is it min dist?
         if keys_set == min_dist_keys_set:
             return self.MIN_DIST
+
+        # Is it max speed?
+        if keys_set == max_speed_keys_set:
+            return self.MAX_SPEED
 
         return self.UNDEFINED

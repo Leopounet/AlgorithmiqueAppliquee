@@ -15,6 +15,11 @@ class BruteForceSolver(Solver):
     """
 
     def __init__(self, graph):
+        """
+        Creates a new BruteForceSolver object.
+
+        :param graph: The graph the solver will have to find a minimum dominating set in.
+        """
         super().__init__(graph)
 
     def solve_(self, size, defenders_list=[], index=0, dominant_value=0, max_possible_deg=0):
@@ -23,7 +28,6 @@ class BruteForceSolver(Solver):
 
         - If there is a collision with the current defender and a selected one, skip 
         - If a solution is found, stop looking for new solutions 
-        - Ideas? 
 
         It basically checks if every subset of the set of defender of size 'size' is a dominant 
         set of the shot set. 
@@ -141,7 +145,7 @@ class BruteForceSolver(Solver):
         res = None
 
         # iterative search for a minimum dominating set
-        for i in range(1, len(self.graph.opponents) * 10):
+        for i in range(1, len(self.graph.opponents) + 1):
 
             # if a solution of this size is impossible, go to the next step
             # here, if DELTA(G) * i < nb_shots then there are no solution

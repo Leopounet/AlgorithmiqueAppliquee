@@ -3,6 +3,8 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from src.Solvers.Solver import Solver
+from src.Solvers.RandomSolver import RandomSolver
+from src.Solvers.SolverArgs import SolverArgs
 
 
 """
@@ -38,7 +40,7 @@ class GreedySolver(Solver):
         # the first bit (which is always 1) will become a 0
         # changing the whole meaning of the bitwise representation
         # find more info in Graph.py
-        self.compensation = int((self.graph.dominant_value + 1) / 2)
+        self.compensation = int((self.graph.dominant_value + 1) // 2)
 
         # the maximum index possible
         self.max_index = len(self.graph.edges) - 1
@@ -267,15 +269,48 @@ class GreedySolver(Solver):
         :return: A list of defenders dominating the graph, or None if none \
         exist/could be found.
         """
+
+        # if there are no solution at all, we can stop here
         if not self.has_solution(self.graph.edges, 0):
             return None
+
+        # creates a copy of the edges of the graph because they
+        # are going to be modified
         edges = self.graph.edges.copy()
+
+        # solve for the given graph
         res = self.solve_(0, [], edges)
-        changed = True
+
+        # it is possible that tis solver does not find a solution, eventhough
+        # there is one (or multiple)
+        # in this case, we can use the random solver to dramatically
+        # increase the chances of finding a solution
+        # this can be disabled
         if res == None:
-            return res
+            
+            # if we definitely want a solution
+            if params.greedy_random:
+                # create a random solver with default arguments
+                random_args = SolverArgs()
+                random_args.compare_func = lambda x, y : x < y
+                random_args.random_tries = 1000
+                random_args.random_i_max = 78
+                random_args.random_prob = 0.6
+                random_args.random_timeout = 0.5
+
+                # solve with random solver
+                solver = RandomSolver(self.graph)
+                return solver.solve(random_args)
+            return None
+
+        # if a solution has been found, it is possible that some node
+        # are actually useless wrt the other nodes
+        # in this case, we remove the useless nodes 
+        changed = True
         while changed:
             res, changed = self.purge(res, self.graph.edges)
+
+        # return the list of defenders
         return self.graph.index_list_to_defenders(res)
 
     def sort(self, compare_func):

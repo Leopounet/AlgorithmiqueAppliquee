@@ -6,13 +6,11 @@ import math
 import json
 import random
 from src.ProblemUtils.ProblemType import ProblemType
-from src.Utils.Vector import Vector
 
 
-def problem_generator(pb_type, name="auto_generated", opponents=None):
+def problem_generator(pb_type, name="auto_generated_problem.json", opponents=None):
     """
-    This function saves a random problem as json file. The saved file 
-    will be located in src/dumps/. 
+    This function saves a random problem as json file.
 
     :param type: The type of problem, 'B' for Basic problem, 'MD' for Minimum Distance, \
     'IP' for Initial Positions, 'GK' for Goal Keeper, 'MG' for MultiGoal (default: 'B'). 
@@ -75,6 +73,7 @@ def problem_generator(pb_type, name="auto_generated", opponents=None):
 
 
     # Multigoal: generates between 1 and 4 additional goals
+    # removed for now because the ssl viewer does not display logical results
     if pb_type == ProblemType.MULTI_GOAL:
         raise "Faulty implementation in the ssl viewer, these can not be verified for now"
         # tmp["goals"] = []
@@ -98,5 +97,5 @@ def problem_generator(pb_type, name="auto_generated", opponents=None):
         #     })
 
 
-    with open(name + '_problem.json', 'w') as f:
+    with open(name, 'w') as f:
         json.dump(tmp, f)

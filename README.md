@@ -31,7 +31,7 @@ La documentation générée sera placée dans le dossier doc/.
 
 Pour le tester:
 
-`python3 test.py <file> <solveur>`
+`python3 main.py <file> <solveur>`
 
 où file est l'emplacement d'un problème à résoudre
 et solveur le solveur à utiliser (greedy, random ou brute).
@@ -50,8 +50,7 @@ Lancer le solveur sur un problème donné, puis ouvrir le visualiseur:
 
 ## Le solveur random
 
-Les paramètres du solveur random peuvent être modifiés dans le fichier `main.py` (dans la partie variable). Les autres
-solveurs n'ont pas de paramètres intéressants à modifier.
+Les paramètres des solveurs peuvent être modifiés dans le fichier `main.py` (dans la partie variable).
 
 # Remerciement
 

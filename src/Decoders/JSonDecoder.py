@@ -80,6 +80,10 @@ def decode(file):
         res["gk_bottom_left"] = Point(res["goalkeeper_area"][0][0], res["goalkeeper_area"][1][0])
         res["gk_top_right"] = Point(res["goalkeeper_area"][0][1], res["goalkeeper_area"][1][1])
 
+    if problem_type == ProblemType.MAX_SPEED:
+        res["ball_max_speed"] = tmp_res["ball_max_speed"]
+        res["robot_max_speed"] = tmp_res["robot_max_speed"]
+
     return (res, problem_type)
 
 def save_json(defenders, name="data.json"):

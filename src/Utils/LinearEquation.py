@@ -158,6 +158,39 @@ class LinearEquation:
         return None
 
     @classmethod
+    def perpendicular_intersection_point_line(self, line, point):
+        """
+        Returns the intersection point of a given line and a perpendicular line passing
+        through a given point.
+
+        :param line: The original line.
+
+        :param point: The point through which the perpendicular line should pass.
+
+        :return: A point that is the wanted intersection.
+        """
+
+        # here we don't create a new LinearEquation to handle the case line.a == 0
+        # because the perpendicular lines to this one are vertical lines
+
+        # if not vertical, the usual ax + b
+        perp_a = 0
+        perp_b = 0
+
+        # if the given line is a straight line, return the intersection point
+        # defined as follows
+        if line.a == 0:
+            return Point(point.x, line.b)
+
+        # otherwise compute the wanted perpendicular line
+        perp_a = -1 / line.a
+        perp_b = point.y - perp_a * point.x
+        le = LinearEquation(perp_a, perp_b)
+
+        # return the intersection point (always exists)
+        return le.intersection(line)
+
+    @classmethod
     def create_le_from_pa(self, point, angle):
         """
         Creates a new 'LinearEquation' object from a point and an angle. 

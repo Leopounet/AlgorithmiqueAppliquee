@@ -6,10 +6,9 @@ import math
 from src.Utils.Vector import Vector
 from src.Utils.Point import Point
 from src.Utils.ConvexShape import ConvexShape
-from src.Utils.UsefulTypes import Opponent, Shot, Defender
+from src.Utils.UsefulTypes import Opponent, Shot, Defender, Goal
+from src.Utils.LinearEquation import LinearEquation
 from src.ProblemUtils.ProblemType import ProblemType
-import random
-import time
 
 """
 This modules is used to represent a graph for this specific problem, so 
@@ -21,16 +20,15 @@ class Graph:
     """
     This class represents a graph.
 
-    :ivar defenders: This is a list of all the Defender objects that can be placed on 
-    the field (at first). These are one of the two parts of our vertices. \
+    :ivar defenders: This is a list of all the Defender objects that can be placed on \
+    the field (at first). These are one of the two parts of our vertices. 
 
-    :ivar opponents: A list of all the opponents on the field. This isn't used in the 
-    Graph per se, but it is important for efficiency reasons (see exists_collision). \
+    :ivar opponents: A list of all the opponents on the field. This isn't used in the \
+    Graph per se, but it is important for efficiency reasons (see exists_collision). 
 
-    :ivar shots: This is a list of all the possible shots (whether are not they are aimed at a 
-    goal). This is the second part of our vertices. \
+    :ivar shots: This is a list of all the possible shots. This is the second part of our vertices.
 
-    :ivar edges: This a specific representation of edges. This a list of numbers where there \
+    :ivar edges: This is a specific representation of edges. This is a list of numbers where their \
     binary representation represents the graph's matrix. 
 
     For example, if G has 3 vertices you can expect:
@@ -39,47 +37,106 @@ class Graph:
     | 1010
     | 1100
 
-    This is looking exactly like a normal matrix. Except that actually extracting an edge out of 
-    this representation is not efficient. That being said, it is an interesting representation 
+    This is looking exactly like a normal matrix. Except that actually extracting an edge out of \
+    this representation is not efficient. That being said, it is an interesting representation \
     because it allows us to quickly check if a set of vertices cover the whole graph. 
 
-    Back on the example, choose v1 and v3, and compute 1101 | 1100 (fast on computers), 
-    it returns 1101. Therefore those two vertices do NOT represent a dominant set. On the other 
-    hand, choose v1 and v2, 1101 | 1010 gives as a result 1111, therefore v1 
+    Back on the example, choose v1 and v3, and compute 1101 | 1100 (fast on computers), \
+    it returns 1101. Therefore those two vertices do NOT represent a dominant set. On the other \
+    hand, choose v1 and v2, 1101 | 1010 gives as a result 1111, therefore v1 \
     and v2 is a dominant set of G. 
 
-    :ivar dominant_value: This is the expected value if the disjunction of the binary representations 
-    of the selected vertices is a dominant set. \
+    :ivar dominant_value: This is the expected value if the disjunction of the binary representations \
+    of the selected vertices is a dominant set. 
     """
 
-    def __init__(self, problem):
+    def __init__(self, problem, optimized=True):
         """
         Construct a new 'Graph' object. 
 
-        :param problem: The problem to use to construct the graph. 
+        :param problem: The problem to use to construct the graph.
+
+        :param optimized (opt): If set to true, a defender will be considered interesting iff \
+        it is on at least one edge of the triangles (see below for explanations on those). True \
+        by default. Note that this optimization can lead to losing some valid solution and in the \
+        worst cases can lead to not find solutions when some exist.
 
         :return: returns nothing.
         """
+
+        # the list of defenders in the final graph
+        # that is those that block at least one shot
         self.defenders = []
+
+        # the list of opponents in the graph
         self.opponents = []
+
+        # the list of all shots in the graph
+        # this list is actually a list of list
+        # each sub list corresponds to all the valid shots
+        # between a given opponent and a given goal
+        # therefore if there 3 opponents and 2 goals for example
+        # there will be 6 sub lists
         self.shots = []
+
+        # the list of edges in the graph, an edge exists
+        # between a defender and a shot if the shot is intercepted
+        # by this defender
+        #
+        # note that this is used as a adjacency matrix
+        # we also actually take advantage of Python's huge number
+        # limit
+        #
+        # the list is actually a list of integers with their
+        # binary representation being the adjacency matrix
+        # each number corresponds to the 'list' of shots blocked by 
+        # the nth defender
+        #
+        # for example 10111010
+        # means that the nth defenders blocks shots 2, 3, 4, 6
+        # (the first one is a place holder so that every integer has
+        # the exact same binary length)
         self.edges = []
+
+        # as explained above, in a to become dominanting set we basically "or" all the 
+        # corresponding edges together, the resulting value of an actual dominanting set
+        # is this value 
         self.dominant_value = 0
 
-        self.min_deg_index = 0
+        # the index of the defender blocking the greatest amount of shots
         self.max_deg_index = 0
-        self.min_deg = None
+
+        # the maximum number of blocked shots by a defender
         self.max_deg = 0
-        self.max_deg_after = []
+
+        # the list of degrees (= number of blocked shots) associated to each defender
         self.deg = []
 
+        # this is a list of triangles drawn between each pair of goal and opponent
         self.triangles = []
+
+        # each opponent has an 'optimal' distance from it at which if a defender is placed
+        # it will block all their shots wrt a goal (note that this distance could be less than  
+        # the radius of the robots if the opponent is very close to the goal)
+        # when a defender is placed, we can compute how good his placement is wrt all the optimal
+        # placements
+        #
+        # this clearly could be improved, to give a 'higher weight' to defenders that are very close
+        # to the optimal distance of one opponent (here all opponents have the same importance
+        # if the opponents are all far away from each other, this value is almost useless)
         self.total_distance_defender = []
 
+        # the total number of shots
         self.nb_shots = 0
 
+        # the problem to solve
         self.problem = problem
 
+        # if True the graph generated will lose some valid solutions but will also
+        # make it much much easier for solvers to find an optimal solution
+        self.optimized = optimized
+
+        # compute everything needed for the graph
         self.compute_graph(problem)
 
     def compute_graph(self, problem):
@@ -95,11 +152,13 @@ class Graph:
         self.dominant_value = pow(2, self.nb_shots + 1) - 1
 
         # Computes all interesting position (those that stop at least one shot)
-        self.compute_triangles(problem["goals"], problem["radius"])
+        # (impossible for now in the case of ball speed, although it should be possible
+        # also, some defenders should be easy to exclude in this extension...)
+        self.compute_triangles(problem["goals"])
         self.compute_all_positions(problem["bottom_left"], problem["top_right"], 
                                    problem["pos_step"], problem["radius"], problem["goals"])
 
-    def compute_default_triangles(self, goal):
+    def compute_triangles(self, goals):
         """
         Computes triangles from all opponents to a given goal. 
 
@@ -107,25 +166,9 @@ class Graph:
 
         :return: The list of triangles.
         """
-        triangles = []
-        for opponent in self.opponents:
-            triangles.append(ConvexShape.compute_triangle(opponent, goal))
-        return triangles.copy()
-
-    def compute_new_triangles(self, triangles, radius):
-        """
-        Computes a bigger triangle to account for the radius of the robots. 
-
-        :param triangles: The list of created triangles. 
-
-        :param radius: The radius of the robots. 
-
-        :return: A new list of triangles.
-        """
-        new_triangles = []
-        for triangle in triangles:
-            new_triangles.append(ConvexShape.compute_bigger_triangle(triangle, radius))
-        return new_triangles.copy()
+        for goal in goals:
+            for opponent in self.opponents:
+                self.triangles.append(ConvexShape.compute_triangle(opponent, goal))
 
     def point_in_triangles(self, point):
         """
@@ -135,31 +178,43 @@ class Graph:
 
         :return: The list of triangles the point is in.
         """
+
+        # the list of triangles (by index) the points is in
         tmp = []
+
+        # the current index of the triangle considered
         index = 0
+        
+        # get the radius of the robots
+        radius = self.problem["radius"]
+
+        # creating a new defender object to call the following methods
+        # we could use some overload but that implies duplicating some code
+        # which is not something we want for this specific project
+        # for it is already pretty difficult to navigate
+        defender = Defender(point, radius)
+
+        # loop through all the triangles
         for triangle in self.triangles:
-            if triangle.point_in(point):
+            
+            # get the angles of the two sides of the triangle going towards the goal
+            angle1 = math.atan(LinearEquation.create_le_from_pp(triangle.points[0], triangle.points[1]).a)
+            angle2 = math.atan(LinearEquation.create_le_from_pp(triangle.points[0], triangle.points[2]).a)
+
+            # if the defender does not intersect either of those lines, then it is not interesting
+            # the idea behind this choice is that, except in specific cases, a defender in the middle
+            # of a triangle is not useful, because then you obviously need two more defenders to complete
+            # the triangle (if not more)
+            #
+            # although this is true in most cases, it's important to note that this does
+            # remove some possible solutions, and in the worst cases, it removes all the 
+            # possible solutions, this why there is an option to deactivate this optimization
+            if (LinearEquation.intersection_circle(defender, angle1, triangle.points[0], radius) != None or
+                LinearEquation.intersection_circle(defender, angle2, triangle.points[0], radius) != None or
+                (not self.optimized and triangle.point_in(point))):
                 tmp.append(index)
             index += 1
         return tmp.copy()
-
-    def compute_triangles(self, goals, radius):
-        """
-        Computes the list of all the triangles to consider. 
-
-        A triangle is a zone delimited by three points: an opponent and two goal posts. Here
-        all the possible triangles are computed. All shots are guaranteed to be represented by those triangles.
-        The triangles computes are a bit bigger to account for the size of the robots (a defender might 
-        not be in the original triangle and still stop a shot). 
-
-        :param goals: The list of goals. 
-
-        :param radius: Teh radius of the robots. 
-
-        :return: returns nothing.
-        """
-        for goal in goals:
-            self.triangles += self.compute_new_triangles(self.compute_default_triangles(goal), radius)
 
     def compute_all_shots(self, opponents, step, goals):
         """
@@ -220,7 +275,7 @@ class Graph:
         if abs(angle) == math.pi / 2 or angle == 0 or abs(angle) == math.pi:
             return 100
 
-        opt = radius / math.tan(angle) + radius
+        opt = (radius / 2) / math.tan(angle)
         return opt
 
     def compute_distance_sum(self, defender, index_tr, index_def):
@@ -235,13 +290,21 @@ class Graph:
 
         :return: returns nothing.
         """
+
+        # get the optimal distance from the opponent
         opt = self.perfect_distance_from_triangle(self.triangles[index_tr], defender.radius)
+
+        # get the distance of the current defender
         dst = defender.pos.distance(self.triangles[index_tr].points[0])
 
+        # if this is the first time we consider this defender, create a new 
+        # cell for it
         if len(self.total_distance_defender) <= index_def:
-            self.total_distance_defender.append(abs(opt - dst))
+            self.total_distance_defender.append(abs(opt - dst) * 10)
+
+        # otherwise sum the difference of this placement with all the previously computed distances
         else:
-            self.total_distance_defender[index_def] = min(self.total_distance_defender[index_def], abs(opt - dst))
+            self.total_distance_defender[index_def] = min(self.total_distance_defender[index_def], abs(opt - dst) * 10)
 
     def exists_collision_opponents(self, defender, radius):
         """
@@ -269,9 +332,23 @@ class Graph:
 
         :return: True if the defender intercepts at least one shot, False otherwise.
         """
-        for goal in goals:
-            if goal.shot_intercepted(defender, shot):
-                return True
+
+        # in all the cases, but max_speed, we can use shot_intercepted because we
+        # consider the defender as it is
+        if self.problem.type != ProblemType.MAX_SPEED:
+            for goal in goals:
+                if goal.shot_intercepted(defender, shot):
+                    return True
+
+        # but in the case of max_speed, we need to use a different method
+        # that computes distance and speed instead of checking if the shot is blocked
+        # by the defender (more info in UsefulTypes/Goal)
+        else:
+            ball_speed = self.problem["ball_max_speed"]
+            player_speed = self.problem["robot_max_speed"]
+            for goal in goals:
+                if goal.shot_intercepted_with_speed(defender, shot, ball_speed, player_speed):
+                    return True
         return False
 
     def compute_all_positions(self, bottom_left, top_right, step, radius, goals):
@@ -307,10 +384,12 @@ class Graph:
 
                 p = Point(x, y)
 
-                in_triangle = self.point_in_triangles(p)
-                if in_triangle == []:
-                    y += step
-                    continue
+                in_triangle = None
+                if not self.problem.type == ProblemType.MAX_SPEED:
+                    in_triangle = self.point_in_triangles(p)
+                    if in_triangle == []:
+                        y += step
+                        continue
 
                 # Current defender (if it were to be placed here)
                 defender = Defender(p, radius)
@@ -341,11 +420,11 @@ class Graph:
                 # Checking every valid shot, if at least one is intercepted, the defender gets added to
                 # the list
                 for i in range(len(self.triangles)):
-                    if i in in_triangle:
+                    if in_triangle == None or i in in_triangle:
                         self.compute_distance_sum(defender, i, index)
                         for shot in self.shots[i]:
+
                             if self.exist_goal(defender, shot, goals):
-                                    
                                 # Shifting to the left (*2) and adding one to signify that
                                 # an edge exists
                                 edges = (edges << 1) + 1
@@ -357,19 +436,24 @@ class Graph:
                 
                 # If the result is not 1
                 # The defender is added (because it isn't useless)
-                if edges != (self.dominant_value + 1) / 2:
+                if edges != (self.dominant_value + 1) // 2:
+
+                    # add the defender to the list of possible defenders
                     self.defenders.append(defender)
+
+                    # add the corresponding edge (= blocked shots)
                     self.edges.append(edges)
-                    if self.min_deg == None:
-                        self.min_deg = deg
+
+                    # update the maximum degree found (and its index)
                     if self.max_deg != max(self.max_deg, deg):
                         self.max_deg = deg
                         self.max_deg_index = index
-                    if self.min_deg != min(self.min_deg, deg):
-                        self.min_deg = deg
-                        self.min_deg_index = index
+
+                    # add the degree of this node to the list of degrees
                     self.deg.append(deg)
                     index += 1
+
+                # we created a cell in case, but we can remove it if the defender is useless
                 else:
                     del self.total_distance_defender[-1]
                 
@@ -462,7 +546,7 @@ class Graph:
         res = ""
         for x in self.edges:
             res += str(bin(x))[2:]
-            res += "n"
+            res += "\n"
             
         return res
                 

@@ -393,8 +393,6 @@ class Goal:
         :return: True if the shot is intercepted, False otherwise.
         """
 
-        tan_theta = math.tan(shot.angle)
-
         o_x = shot.opponent.pos.x
         o_y = shot.opponent.pos.y
 
@@ -425,6 +423,8 @@ class Goal:
             if abs(shot.angle) == math.pi or shot.angle == 0:
                 q = Point(self.e_pos.x, o_y)
                 return self.is_in_interval(min(q.x, o_x), max(q.x, o_x), p.x)
+
+            tan_theta = math.tan(shot.angle)
 
             le2 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
             q = Point(self.e_pos.x, le2.apply(self.e_pos.x)) 
@@ -460,6 +460,8 @@ class Goal:
         if abs(shot.angle) == math.pi or shot.angle == 0:
             q = Point(le1.reverse(o_y), o_y)
             return self.is_in_interval(min(q.x, o_x), max(q.x, o_x), p.x)
+
+        tan_theta = math.tan(shot.angle)
         
         # LE of the shot
         le2 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
@@ -470,6 +472,80 @@ class Goal:
 
         return self.is_in_interval(min(q.x, o_x), max(q.x, o_x), p.x)
 
+    def shot_intercepted_with_speed(self, defender, shot, ball_speed, player_speed):
+        """
+        Checks if the given defender intercepts the given shot wrt this goal.
+        This method also takes into account that the defender can move.
+
+        :param defender: The defender that should intercept the shot. 
+
+        :param shot: The shot to intercept. 
+            
+        :return: True if the shot is intercepted, False otherwise.
+        """
+
+        o_x = shot.opponent.pos.x
+        o_y = shot.opponent.pos.y
+
+        le1 = None
+        le2 = None
+
+        q = None
+
+        p_inter = None
+
+        tan_theta = None
+
+        # If the angle = pi / 2 or - pi / 2, then tan(angle) is undefined
+        # In these cases, the shot is vertical, therefore it is valid
+        # iff the y coordinate of the intersection point of the defender and the shot
+        # is between the goal and the opponent
+        if abs(shot.angle) == math.pi / 2:
+            p_inter =  Point(shot.opponent.pos.x, defender.pos.y)
         
+        else:
+
+            tan_theta = math.tan(shot.angle)
+
+            # LE of the shot
+            le2 = LinearEquation(tan_theta, o_y - tan_theta * o_x)
+
+            # check if this point is reachable by the defender quickly enough
+            # first get the intersection point of the shot and the shortest line from the
+            # defender to the shot
+            p_inter = LinearEquation.perpendicular_intersection_point_line(le2, defender.pos)
+
+        # compute the distances between p_inter and the defender/opponent
+        d_opponent = p_inter.distance(shot.opponent.pos)
+        d_defender = p_inter.distance(defender.pos)
+
+        # check that the defender can reach this point before the ball
+        # if not, this defender isn't correct
+        if not ((d_defender) / player_speed <= d_opponent / ball_speed):
+            return False
+
+        # If the goal is vertical, solving the intersection won't work
+        # it is then done "by hand"
+        if self.e_pos.x - self.s_pos.x == 0:
+            return self.is_in_interval(min(self.e_pos.x, o_x), max(self.e_pos.x, o_x), p_inter.x)     
+
+        # If the goal is not vertical, it is now possible to define the coefficient
+        # of the goal's LE
+        ratio = (self.e_pos.y - self.s_pos.y) / (self.e_pos.x - self.s_pos.x)
+
+        # If the shot is parallel to the goal (same coefficient) it doesn't
+        # matter if it is intercepted (this method should only be used
+        # with valid shot in the first place, this is just for completion sake)
+        if math.tan(shot.angle) == ratio:
+            return False
+
+        # LE of the goal
+        le1 = LinearEquation(ratio, self.e_pos.y - self.e_pos.x * ratio)
+
+        # Find the intersection of the two lines and check if the defender
+        # is between this point and the opponent
+        q = le1.intersection(le2)
+
+        return self.is_in_interval(min(q.x, o_x), max(q.x, o_x), p_inter.x)
 
         
