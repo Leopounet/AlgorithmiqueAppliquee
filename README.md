@@ -52,6 +52,11 @@ Lancer le solveur sur un problème donné, puis ouvrir le visualiseur:
 
 Les paramètres des solveurs peuvent être modifiés dans le fichier `main.py` (dans la partie variable).
 
+## La génération du graphe
+
+Le graphe peut être optimisé pour les solveurs (au détriment de l'optimalité des solutions), il suffit de 
+changer la valeur de la variable `optimized` dans le `main.py`.
+
 # Remerciement
 
 Le code du visualiseur peut être trouvé [ici](https://www.labri.fr/perso/lhofer/index.php?page=teaching/algorithmique_appliquee/index).

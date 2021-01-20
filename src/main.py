@@ -25,6 +25,9 @@ RANDOM = RandomSolver
 GREEDY = GreedySolver
 UNKNOWN = None
 
+# args for the graph generation
+optimized = True # if true some problem with valid solution may become unsolvable
+
 # args for the greedy algorithm
 greedy_args = SolverArgs()
 greedy_args.greedy_random = True
