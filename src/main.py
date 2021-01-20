@@ -28,7 +28,7 @@ GREEDY = GreedySolver
 UNKNOWN = None
 
 # args for the graph generation
-optimized = True # if true some problem with valid solution may become unsolvable
+optimized = False # if true some problem with valid solution may become unsolvable
 
 # args for the greedy algorithm
 greedy_args = SolverArgs()
@@ -41,7 +41,7 @@ random_args.compare_func = lambda x, y : x < y
 random_args.random_tries = 10000
 random_args.random_i_max = 1000
 random_args.random_prob = 0.2
-random_args.random_timeout = 0.5
+random_args.random_timeout = 2.0
 random_args.random_perm = None
 
 # args for the brute solver
@@ -104,7 +104,7 @@ problem.decode(path)
 start = time.time()
 
 # creates the graph
-graph = Graph(problem)
+graph = Graph(problem, optimized=optimized)
 
 print("")
 

@@ -145,7 +145,7 @@ class BruteForceSolver(Solver):
         res = None
 
         # iterative search for a minimum dominating set
-        for i in range(1, len(self.graph.opponents) + 1):
+        for i in range(1, len(self.graph.opponents) + 10):
 
             # if a solution of this size is impossible, go to the next step
             # here, if DELTA(G) * i < nb_shots then there are no solution
