@@ -15,6 +15,8 @@ from src.Solvers.BruteForceSolver import BruteForceSolver
 from src.Solvers.GreedySolver import GreedySolver
 from src.Solvers.SolverArgs import SolverArgs
 
+import time
+
 ##################################################################################
 ################################# VARIABLES ######################################
 ##################################################################################
@@ -97,14 +99,28 @@ else:
 problem = Problem(JSonDecoder.decode)
 problem.decode(path)
 
+# timer for the graph generation
+
+start = time.time()
+
 # creates the graph
 graph = Graph(problem)
+
+print("")
+
+print("Le graphe a mis " + str(round(time.time() - start, 4)) + " secondes à se générer.")
 
 # creates the solver
 s = solver(graph)
 
+start = time.time()
+
 # solves the graph
 res = s.solve(args)
+
+print("Le solveur s'est exécuté en " + str(round(time.time() - start, 4)) + " secondes.")
+
+print("")
 
 # if no results are found, stop here
 if res == None:
